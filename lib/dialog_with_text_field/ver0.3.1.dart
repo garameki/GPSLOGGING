@@ -203,7 +203,7 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
   String? getFilename() {
     print(
         'in MyWrapperForFilenameState.getFilename():${key.currentState.toString()}');
-    return key.currentState //.getFilename();
+    return key.currentState!.hihi;//.getFilename();
         .toString(); //.toDiagnosticsNode().name.hashCode.toString();
 //    hashCode.toString(); //間に何か入れるんだろ！！
 
@@ -234,6 +234,8 @@ class MyGPS extends StatefulWidget {
 
 class MyGPSState extends State<MyGPS> {
   String _filename = 'PAROPARO_SAN';
+
+  static String hihi = 'hh';
 
   String getFilename() {
     return _filename;
@@ -267,3 +269,6 @@ class MyGPSState extends State<MyGPS> {
 ///[Widget]を[Dialog]専用にすることで解決できた。
 ///InheritedWidgetも必要なかった。
 
+
+///Git情報
+///ブランチdevelopを切りました。
