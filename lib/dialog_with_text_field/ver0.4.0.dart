@@ -250,6 +250,7 @@ class MyGPSState extends State<MyGPS> {
 ///DialogとほかのWidgetとの通信
 
 ///なんちゃってGPS Widgetをつくって、それとの通信をしました。
+///具体的にはファイル名のやりとりです。
 
 ///ポイント
 ///親から子のメソッド呼び出しはGlobalkeyを使いました。
@@ -259,3 +260,6 @@ class MyGPSState extends State<MyGPS> {
 
 ///Ridirecting Constructorや、Initializing list等については以下に詳しいです。
 ///https://dev.classmethod.jp/articles/about_dart_constructors/#item_01-03
+
+///Keyについては以下を参考にしました。ありがとうございます。
+///https://zenn.dev/flutteruniv_dev/articles/908d4069197e0c
