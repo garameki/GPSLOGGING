@@ -119,7 +119,6 @@ class _MyInputDialogState extends State<MyInputDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print(MyWrapperForFilenameState.stateForDialog.tempFilename);
     return AlertDialog(
       content: TextField(
         controller: controller,
@@ -180,44 +179,23 @@ class MyWrapperForFilename extends StatefulWidget {
 }
 
 class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
-  final GlobalKey key = GlobalKey<MyGPSState>();
-
-  String tempFilename = 'UGOUGO'; //本当はfilenameを保存するメンバなんていらない。
+  final key = GlobalKey<MyGPSState>();
 
   static late MyWrapperForFilenameState stateForDialog;
-
-  ///親が子のメソッドを呼ぶにはどうするのかな？
-  ///具体的には
-  ///MyGPSのget filenameをcallしたい
-  ///
 
   @override
   void initState() {
     super.initState();
   }
 
-//  String getFilename() => tempFilename;
-//  void setFilename(fname) => tempFilename = fname;
+  ///MyGPSのメソッドをよび出す。
+  String? getFilename() => key.currentState!.getFilename();
 
-  ///MyGPSのメソッドをよびたいのだけれど。
-  String? getFilename() {
-    print(
-        'in MyWrapperForFilenameState.getFilename():${key.currentState.toString()}');
-    return key.currentState!.hihi;//.getFilename();
-        .toString(); //.toDiagnosticsNode().name.hashCode.toString();
-//    hashCode.toString(); //間に何か入れるんだろ！！
-
-    //return key.currentState.hashCode.toString(); //このstateはどのwidgetだ？？？
-    //回答_MyGPSStateでした！！！！！！！！！！
-  }
-
-  void setFilename(fname) => tempFilename = fname;
+  void setFilename(fname) => key.currentState!.setFilename(fname);
 
   @override
   Widget build(BuildContext context) {
     stateForDialog = this;
-//    key = GlobalKey<MyGPSState>();
-    print('NEW:$key');
     return _MyWrapperForFilenameInherited(
         state: this,
         child: Column(
@@ -226,7 +204,21 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
 }
 
 class MyGPS extends StatefulWidget {
-  const MyGPS({super.key});
+  const MyGPS({Key? key}) : super(key: key);
+
+  ///リダイレクトコンストラクタ（Redirecting Constructor）。この形で親のコンストラクタを呼び出す必要がある。
+  //const MyGPS({super.key});の形ではダメです！！！
+
+  ///Stack Overflow
+  ///https://stackoverflow.com/questions/73767079/whats-the-difference-between-using-super-key-and-key-key-superkey-key-i/73767149#73767149
+  ///Question
+  ///I want to know what's the main difference between using super.key and (Key? key) : super(key: key) in a flutter app, I mean I know they both set key from the super widgets, but why there is 2 types of them, and which is preferred to use.
+  ///Answer
+  ///super.key is the new syntax, made available in Dart 2.17, which first came with Flutter 3.0. Details are at the release notes: https://dart.dev/guides/whats-new#may-11-2022-217-release
+  ///The new syntax is much shorter and cleaner, [but you'll need to understand both forms for years to come.]
+
+  ///上記の違いはある！！！
+  ///ということですな。
 
   @override
   State<MyGPS> createState() => MyGPSState();
@@ -235,24 +227,19 @@ class MyGPS extends StatefulWidget {
 class MyGPSState extends State<MyGPS> {
   String _filename = 'PAROPARO_SAN';
 
-  static String hihi = 'hh';
-
   String getFilename() {
     return _filename;
   }
 
   void setFilename(fname) {
+    ///[setState()]は[staticメソッド]の中には入れられない
     setState(() {
-      //staticメソッドの中では無理だかんね。
       _filename = fname;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    print('MyGPS:${context.widget.toString()}'); //widgetプロパティは[Key]そのもの！！！
-    print('MyGPSState:${this.toString()}');
-    print(this.hashCode == context.hashCode);
     return Text(_filename);
   }
 }
@@ -261,13 +248,6 @@ class MyGPSState extends State<MyGPS> {
 
 ///説明
 ///DialogとほかのWidgetとの通信
-
-
-
-
-///ver0.3.0
-///[Widget]を[Dialog]専用にすることで解決できた。
-///InheritedWidgetも必要なかった。
 
 
 ///Git情報
