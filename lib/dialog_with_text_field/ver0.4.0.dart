@@ -249,6 +249,13 @@ class MyGPSState extends State<MyGPS> {
 ///説明
 ///DialogとほかのWidgetとの通信
 
+///なんちゃってGPS Widgetをつくって、それとの通信をしました。
 
-///Git情報
-///ブランチdevelopを切りました。
+///ポイント
+///親から子のメソッド呼び出しはGlobalkeyを使いました。
+///直接の子ではないAlertDialogからは[staticメンバ]を使って、
+///   [build()]の際に[this]をそのメンバに入れて、直接[State]にある
+///   インスタンスメソッドにアクセスするようにしました。
+
+///Ridirecting Constructorや、Initializing list等については以下に詳しいです。
+///https://dev.classmethod.jp/articles/about_dart_constructors/#item_01-03
