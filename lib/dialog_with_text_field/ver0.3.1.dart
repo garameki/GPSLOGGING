@@ -58,6 +58,9 @@ class MyInputDialog extends StatefulWidget {
 }
 
 class _MyInputDialogState extends State<MyInputDialog> {
+  late final TextEditingController controller;
+  String textTest = 'INIT';
+
   ///OKボタンの文字色
   Text textNotOk = const Text('NOT', style: TextStyle(color: Colors.grey));
   Text textOk = const Text('OK', style: TextStyle(color: Colors.black));
@@ -68,15 +71,12 @@ class _MyInputDialogState extends State<MyInputDialog> {
   TextStyle styleOk = const TextStyle(color: Colors.black);
   late TextStyle styleOfOkButton;
 
-  final TextEditingController controller =
-      TextEditingController(text: 'example');
-  String textTest = 'INIT';
-
-  ///OKボタンのためのインスタンス
+  ///OKボタンのためのmemberとcallbackたち
   bool textfieldIsBlank = true;
   dynamic _callbackNotOk() => null;
   dynamic _callbackOk() {
-    MyGPS.filename = controller.text;
+    MyWrapperForFilenameState.stateForDialog.setFilename(controller.text);
+    //MyGPS.filename = controller.text;
     Navigator.pop(context);
   }
 
@@ -99,6 +99,8 @@ class _MyInputDialogState extends State<MyInputDialog> {
   @override
   void initState() {
     super.initState();
+    String? value = MyWrapperForFilenameState.stateForDialog.getFilename();
+    controller = TextEditingController(text: value);
     isNotBlank();
     controller.addListener(() {
       if (controller.text.isEmpty) {
@@ -117,6 +119,7 @@ class _MyInputDialogState extends State<MyInputDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print(MyWrapperForFilenameState.stateForDialog.tempFilename);
     return AlertDialog(
       content: TextField(
         controller: controller,
@@ -147,8 +150,9 @@ class _MyInputDialogState extends State<MyInputDialog> {
 }
 
 class _MyWrapperForFilenameInherited extends InheritedWidget {
-  _MyWrapperForFilenameInherited({required super.child, required this.state});
-  _MyWrapperForFilenameState state;
+  const _MyWrapperForFilenameInherited(
+      {required super.child, required this.state});
+  final MyWrapperForFilenameState state;
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
     return true;
@@ -159,23 +163,65 @@ class MyWrapperForFilename extends StatefulWidget {
   const MyWrapperForFilename({super.key});
 
   @override
-  State<MyWrapperForFilename> createState() => _MyWrapperForFilenameState();
+  State<MyWrapperForFilename> createState() => MyWrapperForFilenameState();
 
-  static of(BuildContext context) => context
+  static getFilenameFromMyGPS() {}
+
+  ///使わなくてもお約束のofメソッドを用意してみた。
+  static ofWidget(BuildContext context) => context
       .dependOnInheritedWidgetOfExactType<_MyWrapperForFilenameInherited>()!
+      .state;
+
+  static ofElement(BuildContext context) => (context
+          .getElementForInheritedWidgetOfExactType<
+              _MyWrapperForFilenameInherited>()!
+          .widget as _MyWrapperForFilenameInherited)
       .state;
 }
 
-class _MyWrapperForFilenameState extends State<MyWrapperForFilename> {
-  String filename = 'any';
+class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
+  final GlobalKey key = GlobalKey<MyGPSState>();
+
+  String tempFilename = 'UGOUGO'; //本当はfilenameを保存するメンバなんていらない。
+
+  static late MyWrapperForFilenameState stateForDialog;
 
   ///親が子のメソッドを呼ぶにはどうするのかな？
+  ///具体的には
+  ///MyGPSのget filenameをcallしたい
+  ///
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+//  String getFilename() => tempFilename;
+//  void setFilename(fname) => tempFilename = fname;
+
+  ///MyGPSのメソッドをよびたいのだけれど。
+  String? getFilename() {
+    print(
+        'in MyWrapperForFilenameState.getFilename():${key.currentState.toString()}');
+    return key.currentState //.getFilename();
+        .toString(); //.toDiagnosticsNode().name.hashCode.toString();
+//    hashCode.toString(); //間に何か入れるんだろ！！
+
+    //return key.currentState.hashCode.toString(); //このstateはどのwidgetだ？？？
+    //回答_MyGPSStateでした！！！！！！！！！！
+  }
+
+  void setFilename(fname) => tempFilename = fname;
 
   @override
   Widget build(BuildContext context) {
+    stateForDialog = this;
+//    key = GlobalKey<MyGPSState>();
+    print('NEW:$key');
     return _MyWrapperForFilenameInherited(
         state: this,
-        child: const Column(children: <Widget>[MyGPS(), MyDialogButton()]));
+        child: Column(
+            children: <Widget>[MyGPS(key: key), const MyDialogButton()]));
   }
 }
 
@@ -183,24 +229,28 @@ class MyGPS extends StatefulWidget {
   const MyGPS({super.key});
 
   @override
-  State<MyGPS> createState() => _MyGPSState();
+  State<MyGPS> createState() => MyGPSState();
 }
 
-class _MyGPSState extends State<MyGPS> {
-  String _filename = '';
+class MyGPSState extends State<MyGPS> {
+  String _filename = 'PAROPARO_SAN';
 
-  get filename {
+  String getFilename() {
     return _filename;
   }
 
-  set filename(fname) {
+  void setFilename(fname) {
     setState(() {
+      //staticメソッドの中では無理だかんね。
       _filename = fname;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('MyGPS:${context.widget.toString()}'); //widgetプロパティは[Key]そのもの！！！
+    print('MyGPSState:${this.toString()}');
+    print(this.hashCode == context.hashCode);
     return Text(_filename);
   }
 }
