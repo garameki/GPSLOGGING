@@ -19,53 +19,38 @@ class _TopWidget extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: const Text('Show Dialog Sample')),
         body: const Center(
-          child: MyWrapperForFilename(),
+          child: MyWrapperForInteraction(),
         ));
   }
 }
 
-// ///ダイアログ出現ボタンなので、privateにはできません。
-// class MyDialogButton extends StatefulWidget {
-//   const MyDialogButton({super.key});
-//   @override
-//   MyDialogButtonState createState() => MyDialogButtonState();
-// }
-
-// ///of関数がstaticなので[State]はprivateにできません。
-// class MyDialogButtonState extends State<MyDialogButton> {
 Future<void> inputDialog(BuildContext context) async {
   return await showDialog<void>(
       context: context,
       builder: (context) {
-        return const MyInputDialog();
+        return const _MyInputDialog();
       });
 }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     // ///DialogBox出現用のボタンのインスタンスを作成する。
-//     // ///このなかでもインスタンス作って見たけどダメだった。
-//     // return OutlinedButton(
-//     //     onPressed: () => inputDialog(context), child: const Text('PUSH'));
-//   }
-// }
-
-class MyInputDialog extends StatefulWidget {
-  const MyInputDialog({super.key});
+class _MyInputDialog extends StatefulWidget {
+  const _MyInputDialog();
 
   @override
-  State<MyInputDialog> createState() => _MyInputDialogState();
+  State<_MyInputDialog> createState() => _MyInputDialogState();
 }
 
-class _MyInputDialogState extends State<MyInputDialog> {
+class _MyInputDialogState extends State<_MyInputDialog> {
   late final TextEditingController controller;
 
   ///OKボタンのためのmemberとcallbackたち
   bool textfieldIsBlank = true;
   dynamic _callbackNotOk() => null;
   dynamic _callbackOk() {
-    MyWrapperForFilenameState.stateForDialog.setFilename(controller.text);
-    //MyGPS.filename = controller.text;
+    ////////////////////////////////////////////////////
+    ///ここにMyWrapperを通して操作をしたい命令を書き込む///
+    ////////////////////////////////////////////////////
+    MyWrapperForInteractionState.stateForDialog.setFilename(controller.text);
+
     Navigator.pop(context);
   }
 
@@ -86,9 +71,17 @@ class _MyInputDialogState extends State<MyInputDialog> {
   @override
   void initState() {
     super.initState();
-    String? value = MyWrapperForFilenameState.stateForDialog.getFilename();
+    ////////////////////////////////////////////////////
+    ///ここにMyWrapperを通して操作をしたい命令を書き込む(初期化する)///
+    ////////////////////////////////////////////////////
+    String? value = MyWrapperForInteractionState.stateForDialog.getFilename();
+
     controller = TextEditingController(text: value);
-    isNotBlank();
+    if (controller.text.isEmpty) {
+      isBlank();
+    } else {
+      isNotBlank();
+    }
     controller.addListener(() {
       if (controller.text.isEmpty) {
         isBlank();
@@ -124,7 +117,7 @@ class _MyInputDialogState extends State<MyInputDialog> {
               foregroundColor: MaterialStateProperty.all(Colors.blue),
             ),
             onPressed: callbackOfOkButton,
-            //これだと[AlertDialog]が表示されなくなる.
+            //これだと[AlertDialog]が表示されなくなるので注意.
             // onPressed: textfieldIsBlank
             //     ? _callbackNotOk()
             //     : _callbackOk(), //callbackOfOkButton,
@@ -135,67 +128,84 @@ class _MyInputDialogState extends State<MyInputDialog> {
   }
 }
 
-///不要だ。今回は直接の子孫ではないDialogからstateにアクセスする必要があったため、
-///staticなメンバをstateに用意して、そこからStateのインスタンスメソッドにアクセスしてもらった。
-class _MyWrapperForFilenameInherited extends InheritedWidget {
-  const _MyWrapperForFilenameInherited(
+///Dialog側からはアクセスできません。
+class _MyWrapperForInteractionInherited extends InheritedWidget {
+  const _MyWrapperForInteractionInherited(
       {required super.child, required this.state});
-  final MyWrapperForFilenameState state;
+  final MyWrapperForInteractionState state;
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
     return true;
   }
 }
 
-class MyWrapperForFilename extends StatefulWidget {
-  const MyWrapperForFilename({super.key});
+class MyWrapperForInteraction extends StatefulWidget {
+  const MyWrapperForInteraction({super.key});
 
   @override
-  State<MyWrapperForFilename> createState() => MyWrapperForFilenameState();
+  State<MyWrapperForInteraction> createState() =>
+      MyWrapperForInteractionState();
 
-  ///今回、InheritedWidgetは使えない。
+  ///Dialog側からはInheritedWidgetは使えない。
   ///なぜならば、Dialogのツリーが通常のWidgetのツリーとは別物だから、
-  ///Dialogからさかのぼっても、InheritedWidgetにはたどり着かないからだ。
-  ///使わなくてもお約束のofメソッドを用意してみた。
-  ///今回はWidgetとDialogの通信だったので、[of]は使わなかったが、
-  ///通常のWidget同士の通信ならば、[of]を介して行ったほうがいいかも。
-  ///以下の[ofWidget]と[ofElement]の違いについてもさらに学ぶ必要がある。
+  ///Dialogからさかのぼっても、InheritedWidgetにはたどり着かないから。
+
+  ///一方、同じツリーの子孫からは[of]で[state]が参照可能である。
+  ///以下の[ofWidget]と[ofElement]とwidgetのlifecycleについても学ぶ必要がある。
   static ofWidget(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<_MyWrapperForFilenameInherited>()!
+      .dependOnInheritedWidgetOfExactType<_MyWrapperForInteractionInherited>()!
       .state;
 
   static ofElement(BuildContext context) => (context
           .getElementForInheritedWidgetOfExactType<
-              _MyWrapperForFilenameInherited>()!
-          .widget as _MyWrapperForFilenameInherited)
+              _MyWrapperForInteractionInherited>()!
+          .widget as _MyWrapperForInteractionInherited)
       .state;
 }
 
-///[build]関数を見てもらえばわかるが、このMyWrapperForFilename関連のwidget
+///[build]関数を見てもらえばわかるが、このMyWrapperForInteraction関連のwidget
 ///たちはMyGPSとMyDialogButtonを繋いて、Filenameをやり取りするのに使われている。
-class MyWrapperForFilenameState extends State<MyWrapperForFilename>
+class MyWrapperForInteractionState extends State<MyWrapperForInteraction>
     implements MyWrapperBetweenDialogAndWidget {
   ///以下の二つのメンバはとても重要です。
+  ///Dialogからのアクセス用
+  static late MyWrapperForInteractionState stateForDialog; //build()の中でthisを入れる
+  ///同一ツリーの子孫をアクセスため用のkeyのストック
   final keyMyGPS = GlobalKey<MyGPSState>();
-  static late MyWrapperForFilenameState stateForDialog; //build()の中でthisを入れる
+  final keySonOfMyGPS = GlobalKey<_MySonOfMyGPSState>();
+
+  static String hi = '';
 
   @override
   void initState() {
     super.initState();
+    print('$keySonOfMyGPS////////////////////////////');
   }
 
+  ////////////////////////////////////////////////////
+  ///ここにMyWrapperを通して操作をしたい命令を書き込む///
+  ////////////////////////////////////////////////////
   ///DialogからstateForDialogを通してこの二つの関数を呼び出すことで、
   ///間接的にMyGPSのメソッドをよび出してFilenameをやりとりしている。
   String? getFilename() => keyMyGPS.currentState!.getFilename();
 
-  void setFilename(fname) => keyMyGPS.currentState!.setFilename(fname);
+  void setFilename(fname) {
+    keyMyGPS.currentState!.setFilename(fname);
+    keySonOfMyGPS.currentState!.setFilename(fname);
+  }
+  ////////////////////////注意//////////////////////////////////
+  ///[key]を通して操作する子孫は[StatefulWidget]でなくてはならない。
+  ///その[State]の方に操作したいインスタンスメソッドを盛り込んでおく。
+//////////////////////////////////////////////////////////////
 
   @override
   Widget build(BuildContext context) {
     stateForDialog = this;
-    return _MyWrapperForFilenameInherited(state: this, child: Column(
-//            children: <Widget>[MyGPS(key: keyMyGPS), const MyDialogButton()]));
-        children: <Widget>[MyGPS(key: keyMyGPS)]));
+    return _MyWrapperForInteractionInherited(
+        state: this,
+        child: MyGPS(
+          key: keyMyGPS,
+        ));
   }
 }
 
@@ -223,6 +233,7 @@ class MyGPS extends StatefulWidget {
 class MyGPSState extends State<MyGPS> {
   String _filename = 'PAROPARO_SAN';
 
+  late GlobalKey key;
   String getFilename() {
     return _filename;
   }
@@ -235,14 +246,48 @@ class MyGPSState extends State<MyGPS> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    key = MyWrapperForInteraction.ofElement(context).keySonOfMyGPS;
+    print('$key////////////////////////////');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
 //        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
         children: <Widget>[
           Text(_filename),
           OutlinedButton(
-              onPressed: () => inputDialog(context), child: const Text('PUSH'))
+              onPressed: () => inputDialog(context),
+              child:
+                  const Text('Open Dialog-with-textfield to rename filename')),
+          MySonOfMyGPS(key),
         ]);
+  }
+}
+
+class MySonOfMyGPS extends StatefulWidget {
+  const MySonOfMyGPS(Key? key) : super(key: key);
+
+  @override
+  State<MySonOfMyGPS> createState() => _MySonOfMyGPSState();
+}
+
+class _MySonOfMyGPSState extends State<MySonOfMyGPS> {
+  String _filename = 'Son_Son_SOn';
+
+  String? getFilename() => _filename;
+  setFilename(value) {
+    setState(() {
+      _filename = value;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(_filename);
   }
 }
 
@@ -256,7 +301,10 @@ abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make a
 ///
 ///今回のdevelopでは、
 ///MyGPSのボタンからinputDialog()を呼び出せるようにdevelopします。
+///いや
+///孫からもinputDialog()を呼び出すことに成功しました。
 ///
+///なので、ver0.4.1=>ver0.5.0に書き換えます。
 
 ///abstruct classを作ろうと思うのだが、
 ///良記事
@@ -268,9 +316,17 @@ abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make a
 ///だから、ここで考えなければならないことは、ただ一つ。
 ///子孫から[inputDialog()]を呼べるようにすること！
 ///
-///それには[of]が使えそうですね。
+///それは問題ありません。[inputDialog]はグローバルに定義されているので、
+///importさえしておけば、どこからでも呼び出せます。
 
-
+///次の問題は子ではなく子孫にキーをMyWrapperから渡す方法です。
+///ためしに[of]を使ってみましょう。
+///MySonOfMyGPSをstatefulWidgetで作って、ofでkeyを取得したら、
+///MySonOfMyGPSState内のメソッドを実行できました。
+///成功です。
+///ただ、気になるのはMySonOfMyGPSのofの最後にある[keySonOfMyGPS]が「定義されていません」
+///と、表示されてしまうことです。これは、VSCodeのバグなのでしょうか？
+///でも、動くのでいいですけど、Bagfixに支障が出る恐れがあります。
 
 
 ///ver0.4.0
