@@ -173,10 +173,11 @@ class MyWrapperForFilename extends StatefulWidget {
 
 ///[build]関数を見てもらえばわかるが、このMyWrapperForFilename関連のwidget
 ///たちはMyGPSとMyDialogButtonを繋いて、Filenameをやり取りするのに使われている。
-class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
+class MyWrapperForFilenameState extends State<MyWrapperForFilename>
+    implements MyWrapperBetweenDialogAndWidget {
   ///以下の二つのメンバはとても重要です。
-  final key = GlobalKey<MyGPSState>();
-  static late MyWrapperForFilenameState stateForDialog;
+  final keyMyGPS = GlobalKey<MyGPSState>();
+  static late MyWrapperForFilenameState stateForDialog; //build()の中でthisを入れる
 
   @override
   void initState() {
@@ -185,9 +186,9 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
 
   ///DialogからstateForDialogを通してこの二つの関数を呼び出すことで、
   ///間接的にMyGPSのメソッドをよび出してFilenameをやりとりしている。
-  String? getFilename() => key.currentState!.getFilename();
+  String? getFilename() => keyMyGPS.currentState!.getFilename();
 
-  void setFilename(fname) => key.currentState!.setFilename(fname);
+  void setFilename(fname) => keyMyGPS.currentState!.setFilename(fname);
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +196,7 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
     return _MyWrapperForFilenameInherited(
         state: this,
         child: Column(
-            children: <Widget>[MyGPS(key: key), const MyDialogButton()]));
+            children: <Widget>[MyGPS(key: keyMyGPS), const MyDialogButton()]));
   }
 }
 
@@ -236,14 +237,34 @@ class MyGPSState extends State<MyGPS> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(_filename);
+    return Column(
+        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
   }
 }
+
+abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make abstract class.
+
 
 
 
 ///ver0.4.1
 ///どうやって本物のGPSと通信するかを考えるdevelopブランチです。
+///
+///今回のdevelopでは、
+///MyGPSのボタンからinputDialog()を呼び出せるようにdevelopします。
+///
+
+///abstruct classを作ろうと思うのだが、
+///良記事
+///https://zenn.dev/iwaku/articles/2020-12-16-iwaku
+///今回はやめておく
+
+///よくよく考えると、
+///Dialogが必要になるtreeには[MyWrapper]を上層部にかませておけば安心
+///だから、ここで考えなければならないことは、ただ一つ。
+///子孫から[inputDialog()]を呼べるようにすること！
+///
+///それには[of]が使えそうですね。
 
 
 
