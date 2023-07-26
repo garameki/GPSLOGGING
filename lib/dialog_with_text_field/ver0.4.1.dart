@@ -24,31 +24,31 @@ class _TopWidget extends StatelessWidget {
   }
 }
 
-///ダイアログ出現ボタンなので、privateにはできません。
-class MyDialogButton extends StatefulWidget {
-  const MyDialogButton({super.key});
-  @override
-  MyDialogButtonState createState() => MyDialogButtonState();
+// ///ダイアログ出現ボタンなので、privateにはできません。
+// class MyDialogButton extends StatefulWidget {
+//   const MyDialogButton({super.key});
+//   @override
+//   MyDialogButtonState createState() => MyDialogButtonState();
+// }
+
+// ///of関数がstaticなので[State]はprivateにできません。
+// class MyDialogButtonState extends State<MyDialogButton> {
+Future<void> inputDialog(BuildContext context) async {
+  return await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return const MyInputDialog();
+      });
 }
 
-///of関数がstaticなので[State]はprivateにできません。
-class MyDialogButtonState extends State<MyDialogButton> {
-  Future<void> inputDialog(BuildContext context) async {
-    return await showDialog<void>(
-        context: context,
-        builder: (context) {
-          return const MyInputDialog();
-        });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ///DialogBox出現用のボタンのインスタンスを作成する。
-    ///このなかでもインスタンス作って見たけどダメだった。
-    return OutlinedButton(
-        onPressed: () => inputDialog(context), child: const Text('PUSH'));
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     // ///DialogBox出現用のボタンのインスタンスを作成する。
+//     // ///このなかでもインスタンス作って見たけどダメだった。
+//     // return OutlinedButton(
+//     //     onPressed: () => inputDialog(context), child: const Text('PUSH'));
+//   }
+// }
 
 class MyInputDialog extends StatefulWidget {
   const MyInputDialog({super.key});
@@ -193,10 +193,9 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename>
   @override
   Widget build(BuildContext context) {
     stateForDialog = this;
-    return _MyWrapperForFilenameInherited(
-        state: this,
-        child: Column(
-            children: <Widget>[MyGPS(key: keyMyGPS), const MyDialogButton()]));
+    return _MyWrapperForFilenameInherited(state: this, child: Column(
+//            children: <Widget>[MyGPS(key: keyMyGPS), const MyDialogButton()]));
+        children: <Widget>[MyGPS(key: keyMyGPS)]));
   }
 }
 
@@ -238,7 +237,12 @@ class MyGPSState extends State<MyGPS> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
+//        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
+        children: <Widget>[
+          Text(_filename),
+          OutlinedButton(
+              onPressed: () => inputDialog(context), child: const Text('PUSH'))
+        ]);
   }
 }
 

@@ -157,6 +157,9 @@ class MyWrapperForFilename extends StatefulWidget {
   ///なぜならば、Dialogのツリーが通常のWidgetのツリーとは別物だから、
   ///Dialogからさかのぼっても、InheritedWidgetにはたどり着かないからだ。
   ///使わなくてもお約束のofメソッドを用意してみた。
+  ///今回はWidgetとDialogの通信だったので、[of]は使わなかったが、
+  ///通常のWidget同士の通信ならば、[of]を介して行ったほうがいいかも。
+  ///以下の[ofWidget]と[ofElement]の違いについてもさらに学ぶ必要がある。
   static ofWidget(BuildContext context) => context
       .dependOnInheritedWidgetOfExactType<_MyWrapperForFilenameInherited>()!
       .state;
