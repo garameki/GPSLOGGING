@@ -135,6 +135,8 @@ class _MyInputDialogState extends State<MyInputDialog> {
   }
 }
 
+///不要だ。今回は直接の子孫ではないDialogからstateにアクセスする必要があったため、
+///staticなメンバをstateに用意して、そこからStateのインスタンスメソッドにアクセスしてもらった。
 class _MyWrapperForFilenameInherited extends InheritedWidget {
   const _MyWrapperForFilenameInherited(
       {required super.child, required this.state});
@@ -151,6 +153,9 @@ class MyWrapperForFilename extends StatefulWidget {
   @override
   State<MyWrapperForFilename> createState() => MyWrapperForFilenameState();
 
+  ///今回、InheritedWidgetは使えない。
+  ///なぜならば、Dialogのツリーが通常のWidgetのツリーとは別物だから、
+  ///Dialogからさかのぼっても、InheritedWidgetにはたどり着かないからだ。
   ///使わなくてもお約束のofメソッドを用意してみた。
   static ofWidget(BuildContext context) => context
       .dependOnInheritedWidgetOfExactType<_MyWrapperForFilenameInherited>()!
@@ -166,8 +171,8 @@ class MyWrapperForFilename extends StatefulWidget {
 ///[build]関数を見てもらえばわかるが、このMyWrapperForFilename関連のwidget
 ///たちはMyGPSとMyDialogButtonを繋いて、Filenameをやり取りするのに使われている。
 class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
+  ///以下の二つのメンバはとても重要です。
   final key = GlobalKey<MyGPSState>();
-
   static late MyWrapperForFilenameState stateForDialog;
 
   @override
@@ -175,7 +180,8 @@ class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
     super.initState();
   }
 
-  ///MyGPSのメソッドをよび出す。
+  ///DialogからstateForDialogを通してこの二つの関数を呼び出すことで、
+  ///間接的にMyGPSのメソッドをよび出してFilenameをやりとりしている。
   String? getFilename() => key.currentState!.getFilename();
 
   void setFilename(fname) => key.currentState!.setFilename(fname);
