@@ -24,7 +24,7 @@ class _TopWidget extends StatelessWidget {
   }
 }
 
-///ダイアログ出現ボタンなので、privateにはできませ。。
+///ダイアログ出現ボタンなので、privateにはできません。
 class MyDialogButton extends StatefulWidget {
   const MyDialogButton({super.key});
   @override
@@ -59,17 +59,6 @@ class MyInputDialog extends StatefulWidget {
 
 class _MyInputDialogState extends State<MyInputDialog> {
   late final TextEditingController controller;
-  String textTest = 'INIT';
-
-  ///OKボタンの文字色
-  Text textNotOk = const Text('NOT', style: TextStyle(color: Colors.grey));
-  Text textOk = const Text('OK', style: TextStyle(color: Colors.black));
-  late Text textOfOkButton;
-
-  //OKボタンの色
-  TextStyle styleNotOk = const TextStyle(color: Colors.grey);
-  TextStyle styleOk = const TextStyle(color: Colors.black);
-  late TextStyle styleOfOkButton;
 
   ///OKボタンのためのmemberとcallbackたち
   bool textfieldIsBlank = true;
@@ -86,14 +75,12 @@ class _MyInputDialogState extends State<MyInputDialog> {
     if (textfieldIsBlank) setState(() {});
     textfieldIsBlank = false;
     callbackOfOkButton = _callbackOk;
-    textTest = 'false';
   }
 
   void isBlank() {
     setState(() {});
     textfieldIsBlank = true;
     callbackOfOkButton = _callbackNotOk;
-    textTest = 'true';
   }
 
   @override
@@ -164,8 +151,6 @@ class MyWrapperForFilename extends StatefulWidget {
   @override
   State<MyWrapperForFilename> createState() => MyWrapperForFilenameState();
 
-  static getFilenameFromMyGPS() {}
-
   ///使わなくてもお約束のofメソッドを用意してみた。
   static ofWidget(BuildContext context) => context
       .dependOnInheritedWidgetOfExactType<_MyWrapperForFilenameInherited>()!
@@ -178,6 +163,8 @@ class MyWrapperForFilename extends StatefulWidget {
       .state;
 }
 
+///[build]関数を見てもらえばわかるが、このMyWrapperForFilename関連のwidget
+///たちはMyGPSとMyDialogButtonを繋いて、Filenameをやり取りするのに使われている。
 class MyWrapperForFilenameState extends State<MyWrapperForFilename> {
   final key = GlobalKey<MyGPSState>();
 
@@ -207,7 +194,7 @@ class MyGPS extends StatefulWidget {
   const MyGPS({Key? key}) : super(key: key);
 
   ///リダイレクトコンストラクタ（Redirecting Constructor）。この形で親のコンストラクタを呼び出す必要がある。
-  //const MyGPS({super.key});の形ではダメです！！！
+  //「const MyGPS({super.key});」の形ではダメです！！！
 
   ///Stack Overflow
   ///https://stackoverflow.com/questions/73767079/whats-the-difference-between-using-super-key-and-key-key-superkey-key-i/73767149#73767149
