@@ -139,6 +139,11 @@ class _MyWrapperForInteractionInherited extends InheritedWidget {
   }
 }
 
+///TextFieldを伴ったDialogをも使えるラッパーです。
+///Textfieldの内容を子孫と共有することができます。
+///[GlobalKey]と[stateForDialog]を使います。
+///子孫へのkeyの継承は[ofElement]を使って[MyWrapperForInteraction]に保存してある
+///keyにアクセスしてもらいます。
 class MyWrapperForInteraction extends StatefulWidget {
   const MyWrapperForInteraction({super.key});
 
@@ -170,7 +175,9 @@ class MyWrapperForInteractionState extends State<MyWrapperForInteraction>
   ///以下の二つのメンバはとても重要です。
   ///Dialogからのアクセス用
   static late MyWrapperForInteractionState stateForDialog; //build()の中でthisを入れる
+  //////////////////////////////////////////////////////////
   ///同一ツリーの子孫をアクセスため用のkeyのストック
+  ///////////////////////////////////////////////////////////
   final keyMyGPS = GlobalKey<MyGPSState>();
   final keySonOfMyGPS = GlobalKey<_MySonOfMyGPSState>();
 
@@ -294,6 +301,8 @@ class _MySonOfMyGPSState extends State<MySonOfMyGPS> {
 abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make abstract class.
 
 
+///ver0.5.0
+///ついに子孫WidgetからinputDialog()を開いて、子孫とTextfieldのString dataのやり取りに成功した。
 
 
 ///ver0.4.1
