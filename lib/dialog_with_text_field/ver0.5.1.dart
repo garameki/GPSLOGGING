@@ -24,29 +24,31 @@ class _TopWidget extends StatelessWidget {
   }
 }
 
-Future<void> inputDialog(BuildContext context) async {
+///これをどこからでも呼び出せばtextfield入りのDialogが開きます。
+Future<void> textfieldDialog(BuildContext context) async {
   return await showDialog<void>(
       context: context,
       builder: (context) {
-        return const _MyInputDialog();
+        return const MyTextfieldDialog();
       });
 }
 
-class _MyInputDialog extends StatefulWidget {
-  const _MyInputDialog();
+///textfieldDialog()の挙動を記述してあるWidgetStatefulWidgetです。
+class MyTextfieldDialog extends StatefulWidget {
+  const MyTextfieldDialog({super.key});
 
   @override
-  State<_MyInputDialog> createState() => _MyInputDialogState();
+  State<MyTextfieldDialog> createState() => _MyTextfieldDialogState();
 }
 
-class _MyInputDialogState extends State<_MyInputDialog> {
+class _MyTextfieldDialogState extends State<MyTextfieldDialog> {
   late final TextEditingController controller;
 
   ///OKボタンのためのmemberとcallbackたち
   bool textfieldIsBlank = true;
   dynamic _callbackNotOk() => null;
   dynamic _callbackOk() {
-    MyWrapperForInteractionState.stateForDialog.setString(controller.text);
+    MyWrapperForInteractionState.stateForDialog.setText(controller.text);
 
     Navigator.pop(context);
   }
@@ -68,10 +70,12 @@ class _MyInputDialogState extends State<_MyInputDialog> {
   @override
   void initState() {
     super.initState();
+
     ///////////////////////////////////////
     ///Textfieldに初めに出したい文字を取得する
     ///////////////////////////////////////
-    String? value = MyWrapperForInteractionState.stateForDialog.getString();
+    //String value = 'example.csv';
+    String? value = MyWrapperForInteractionState.stateForDialog.getText();
 
     controller = TextEditingController(text: value);
     if (controller.text.isEmpty) {
@@ -125,7 +129,7 @@ class _MyInputDialogState extends State<_MyInputDialog> {
   }
 }
 
-///Dialog側からはアクセスできません。
+///Dialog側からはofを使ってもこの[InheritedWidget]にはアクセスできません。
 class _MyWrapperForInteractionInherited extends InheritedWidget {
   const _MyWrapperForInteractionInherited(
       {required super.child, required this.state});
@@ -136,11 +140,12 @@ class _MyWrapperForInteractionInherited extends InheritedWidget {
   }
 }
 
-///TextFieldを伴ったDialogをも使えるラッパーです。
-///Textfieldの内容を子孫と共有することができます。
+///textFieldを伴ったDialogを持つラッパーです。
+///textfieldの内容をこのWidgetを通して子孫と共有することができます。
+///共有には、
 ///[GlobalKey]と[stateForDialog]を使います。
 ///子孫へのkeyの継承は[ofElement]を使って[MyWrapperForInteraction]に保存してある
-///keyにアクセスしてもらいます。
+///keyを取得してもらい、子孫に渡します。
 class MyWrapperForInteraction extends StatefulWidget {
   const MyWrapperForInteraction({super.key});
 
@@ -149,8 +154,8 @@ class MyWrapperForInteraction extends StatefulWidget {
       MyWrapperForInteractionState();
 
   ///Dialog側からはInheritedWidgetは使えない。
-  ///なぜならば、Dialogのツリーが通常のWidgetのツリーとは別物だから、
-  ///Dialogからさかのぼっても、InheritedWidgetにはたどり着かないから。
+  ///なぜならば、Dialogのツリーが通常のWidgetのツリーとは別物ゆえに
+  ///Dialogをさかのぼっても、InheritedWidgetにはたどり着かないから。
 
   ///一方、同じツリーの子孫からは[of]で[state]が参照可能である。
   ///以下の[ofWidget]と[ofElement]とwidgetのlifecycleについても学ぶ必要がある。
@@ -166,30 +171,35 @@ class MyWrapperForInteraction extends StatefulWidget {
 }
 
 ///[build]関数を見てもらえばわかるが、このMyWrapperForInteraction関連のwidget
-///たちはMyGPSとMyDialogButtonを繋いて、Filenameをやり取りするのに使われている。
+///たちはMyGPSとMyDialogButtonを繋いて、textをやり取りするのに使われている。
 class MyWrapperForInteractionState extends State<MyWrapperForInteraction>
     implements MyWrapperBetweenDialogAndWidget {
-  ///以下の二つのメンバはとても重要です。
-  ///Dialogからのアクセス用
+  ///以下[stateForDialog]と[key***]の二つのメンバはとても重要です。
+  ///Dialogからのアクセス用です。変更不可です。
   static late MyWrapperForInteractionState stateForDialog; //build()の中でthisを入れる
   //////////////////////////////////////////////////////////
   ///同一ツリーの子孫をアクセスため用のkeyのストック////////////
-  ///操作したいWigetの数だけ[GlobalKey]を作成する//////////////
+  ///操作したいWigetの数だけ[GlobalKey]を作成してください//////////////
   ///////////////////////////////////////////////////////////
-  final keyMyGPS = GlobalKey<MyGPSState>();
-  final keySonOfMyGPS = GlobalKey<_MySonOfMyGPSState>();
-
-  static String hi = '';
+//  late final GlobalKey keyMyGPS;//子for exaple
+//  late final GlobalKey keySonOfMyGPS;//孫for example
+  final GlobalKey keyMyGPS = GlobalKey<MyGPSState>(); //子for exaple
+  final GlobalKey keySonOfMyGPS; //孫for example
 
   @override
   void initState() {
     super.initState();
     print('$keySonOfMyGPS////////////////////////////');
+    ///////////////////////////////////////////////////////////
+    ///keyをここで生成してください。/////////////////////////////
+    ///////////////////////////////////////////////////////////
+//    keyMyGPS = GlobalKey<MyGPSState>();
+//    keySonOfMyGPS = GlobalKey<_MySonOfMyGPSState>();
   }
 
   ///DialogからstateForDialogを通してこの二つの関数を呼び出すことで、
   ///間接的にMyGPSのメソッドをよび出して文字列をやりとりしている。
-  String getString() {
+  String getText() {
     ////////////////////////////////////////////////////
     ///ここにMyWrapperを通して操作をしたい命令を書き込む///
     ///主に文字の受信///////////////////////////////////
@@ -197,7 +207,7 @@ class MyWrapperForInteractionState extends State<MyWrapperForInteraction>
     return keyMyGPS.currentState!.getFilename();
   }
 
-  void setString(fname) {
+  void setText(fname) {
     ////////////////////////////////////////////////////
     ///ここにMyWrapperを通して操作をしたい命令を書き込む///
     ///主に文字の送信////////////////////////////////////
@@ -264,7 +274,7 @@ class MyGPSState extends State<MyGPS> {
         children: <Widget>[
           Text(_filename),
           OutlinedButton(
-              onPressed: () => inputDialog(context),
+              onPressed: () => textfieldDialog(context),
               child:
                   const Text('Open Dialog-with-textfield to rename filename')),
           MySonOfMyGPS(key),
@@ -309,16 +319,16 @@ abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make a
 ///なぜならば、このWrapperはTextfieldと子孫ウィジェットを繋ぐものだからです。
 
 ///ver0.5.0
-///ついに子孫WidgetからinputDialog()を開いて、子孫とTextfieldのString dataのやり取りに成功した。
+///ついに子孫WidgetからtextfieldDialog()を開いて、子孫とTextfieldのString dataのやり取りに成功した。
 
 
 ///ver0.4.1
 ///どうやって本物のGPSと通信するかを考えるdevelopブランチです。
 ///
 ///今回のdevelopでは、
-///MyGPSのボタンからinputDialog()を呼び出せるようにdevelopします。
+///MyGPSのボタンからtextfieldDialog()を呼び出せるようにdevelopします。
 ///いや
-///孫からもinputDialog()を呼び出すことに成功しました。
+///孫からもtextfieldDialog()を呼び出すことに成功しました。
 ///
 ///なので、ver0.4.1=>ver0.5.0に書き換えます。
 
@@ -330,9 +340,9 @@ abstract class MyWrapperBetweenDialogAndWidget {}//It's procrastinated to make a
 ///よくよく考えると、
 ///Dialogが必要になるtreeには[MyWrapper]を上層部にかませておけば安心
 ///だから、ここで考えなければならないことは、ただ一つ。
-///子孫から[inputDialog()]を呼べるようにすること！
+///子孫から[textfieldDialog()]を呼べるようにすること！
 ///
-///それは問題ありません。[inputDialog]はグローバルに定義されているので、
+///それは問題ありません。[textfieldDialog]はグローバルに定義されているので、
 ///importさえしておけば、どこからでも呼び出せます。
 
 ///次の問題は子ではなく子孫にキーをMyWrapperから渡す方法です。
