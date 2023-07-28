@@ -76,6 +76,9 @@ class MyGPSState extends State<MyGPS> {
   }
 }
 
+
+///ver0.6.0
 ///test用です
 ///./lib/my_wrapper_textfield_dialog_ver0.6.0.dart
 ///を別ファイル化テストするためのものです。
+///切り離しテスト完了です。
