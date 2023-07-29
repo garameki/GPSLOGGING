@@ -17,10 +17,10 @@ import 'package:flutter/material.dart';
 //export 'dialog_with_text_field/ver0.2.0.dart' show MyApp; //widget_testのために必要
 
 //改良中
-//import 'tests/stream_sink.dart' show MyApp;
-import 'dialog_with_text_field/test_my_wrapper_textfield_dialog_ver0.6.0.dart'
-    show MyApp; //widget_testのために必要
-//import 'dialog_with_text_field/sample_statefulDialog_original.dart' show MyApp;
+
+//import 'dialog_with_text_field/ver0.6.0_test.dart show MyApp; //widget_testのために必要
+
+import 'tests/give_widget_key.dart';
 
 void main() {
   runApp(const MyApp());
