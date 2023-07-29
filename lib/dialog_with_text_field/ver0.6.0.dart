@@ -1,4 +1,4 @@
-import 'test_my_wrapper_textfield_dialog_ver0.6.0.dart';
+import 'ver0.6.0_test.dart';
 import 'package:flutter/material.dart';
 
 ///これをどこからでも呼び出せばtextfield入りのDialogが開きます。
