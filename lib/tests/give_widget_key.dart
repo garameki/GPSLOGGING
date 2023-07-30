@@ -1,44 +1,89 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: _TopWidget(),
     );
   }
 }
 
 class _TopWidget extends StatelessWidget {
-  const _TopWidget();
+  _TopWidget();
+
+  /////////////////////////////////////
+  ///一つ上の改装でキーを作成する/////////
+  /////////////////////////////////////
+  final GlobalKey<MyChildState> keyChild = GlobalKey<MyChildState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Show Dialog Sample')),
         body: Center(
-          child: MyParent2(child: MyChild(MyParent2.keyChild)),
-        ));
+            //////////////////////////////////
+            ///キーとキーを入れたWidgetを渡す///
+            //////////////////////////////////
+            child: MyParent2(
+          keyChild: keyChild,
+          child: MyChild(keyChild),
+        )));
   }
 }
 
 class MyParent2 extends StatefulWidget {
-  const MyParent2({super.key, required this.child});
+  const MyParent2({super.key, required this.keyChild, required this.child});
 
-  final Widget child;
-  static final GlobalKey<MyChildState> keyChild = GlobalKey<MyChildState>();
+  ////////////////////////////////////////////////////////////////
+  ///[GlobakKey]のジェネリクスに子の[State]のウィジェット名を入れる///
+  ////////////////////////////////////////////////////////////////
+  final GlobalKey<MyChildState> keyChild;
+
+  final StatefulWidget child;
 
   @override
   State<MyParent2> createState() => MyParent2State();
 }
 
+// キーを外部で作って渡してもらえばいいのだ。！！！
+// キーを作ってそれを使ってinstanciateしたものをchildに迎えればいいのだ。
+// こんな感じ
+// key = GlobalKey<MyGPSState>();
+// MyParent2(keyChild: key,child:MyGPS(key: key));
+// ジェネリクスいらねーな
+
 class MyParent2State extends State<MyParent2> {
+  getText() => widget.keyChild.currentState?.getTextForParent();
+  setText(value) =>
+      widget.keyChild.currentState?.setTextForParent(value.toString());
 
-  getText() => MyParent2.keyChild.currentState?.getTextForParent();
-  setText(value) => MyParent2.keyChild.currentState?.setTextForParent(value);
+  int _counter = 0;
+  void _onTime(value) {
+    _counter++;
+    setText(_counter);
+    print(_counter);
+  }
 
+  late Timer _timer;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), _onTime);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +91,7 @@ class MyParent2State extends State<MyParent2> {
   }
 }
 
-class MyChild extends StatefulWidget implements {
+class MyChild extends StatefulWidget {
   const MyChild(Key? key) : super(key: key);
 
   @override
@@ -54,15 +99,23 @@ class MyChild extends StatefulWidget implements {
 }
 
 ///Childウィジェットには[MyParent2Implements]を[implements]すること
-class MyChildState extends State<MyChild> implements MyParent2Implements{
+class MyChildState extends State<MyChild> implements MyParent2Implements {
+  String _filename = 'HELLO WORLD';
+
+  ///implementsのoverride
   @override
-  getTextForParent() => 'gagaga';
+  getTextForParent() => _filename;
   @override
-  setTextForParent(value) => 'gugugu';
+  setTextForParent(value) {
+    print('in MyChildState $value');
+    setState(() {
+      _filename = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Text(_filename);
   }
 }
 
@@ -71,3 +124,11 @@ abstract class MyParent2Implements {
 
   setTextForParent(value);
 }
+
+
+//test version0.0.2
+
+
+///counterが動かないぞ
+
+///子に渡す値は必ずtoString()する
