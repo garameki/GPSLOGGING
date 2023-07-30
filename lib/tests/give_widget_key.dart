@@ -58,6 +58,9 @@ class MyParent2 extends StatefulWidget {
 
 class MyParent2State extends State<MyParent2> {
   getText() => widget.keyChild.currentState?.getTextForParent();
+  ////////////////////////////////
+  ///必ずStringにcastしてください///
+  ////////////////////////////////
   setText(value) =>
       widget.keyChild.currentState?.setTextForParent(value.toString());
 
@@ -107,7 +110,6 @@ class MyChildState extends State<MyChild> implements MyParent2Implements {
   getTextForParent() => _filename;
   @override
   setTextForParent(value) {
-    print('in MyChildState $value');
     setState(() {
       _filename = value;
     });
