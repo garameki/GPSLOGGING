@@ -175,7 +175,7 @@ abstract class MyParent2ImplementForReceiver {
 }
 
 
-//test version0.1.1
+//test version0.2.0
 
 //今回はdialogではなくて、同じツリーの子同士の通信をやってみる
 
