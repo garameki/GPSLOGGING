@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 //import 'package:intl/date_symbol_data_local.dart';
 //import 'package:intl/date_time_patterns.dart';
 
-import 'gps_storage.dart';
+import '../gps_storage/ver0.1.0.dart';
 
 //GPSを操作する
 //Storageに格納する
