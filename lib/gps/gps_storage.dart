@@ -93,17 +93,28 @@ class GPSStorage {
         '$pathApp$_foldaNameOfLocationFile$_filenameNameOfLocationFile';
     File file = File(filepath);
 
+    bool flagError = true;
+
     try {
       bool isExist = await file.exists();
-      if (!isExist) throw ('ファイルが存在しません。$filepath');
-      //ファイルやフォルダが存在しない場合は読み込めません。
+      if (!isExist) {
+        flagError = true;
+        throw ('ファイルが存在しません。$filepath');
+      } //ファイルやフォルダが存在しない場合は読み込めません。
       filename = await file.readAsString();
-      if (filename == '') throw ('ファイル名が格納されていません。');
+      if (filename == '') {
+        flagError = false;
+        throw ('ファイル名が格納されていません。');
+      }
     } catch (e) {
-      print('in filenameLocationFile');
+      print('at get filenameLocationFile on gps_storage.dart');
       print(e);
-      print('in filenameLocationFile');
-      return 'dummy.csv';
+      print('at get filenameLocationFile in gps_storage.dart');
+      if (flagError) {
+        return 'fileIsEmpty.csv';
+      } else {
+        return 'fileIsNotExist.csv';
+      }
     }
     return filename;
   }
@@ -144,7 +155,7 @@ class GPSStorage {
     } else {
       contents = await file.readAsString();
     }
-//    print(contents);
+    print(contents);
     return contents;
   }
 
@@ -169,16 +180,18 @@ class GPSStorage {
         '$pathApp$_foldaNameOfLocationFile$_filenameNameOfLocationFile';
     File file = File(filepath);
 
-    try {
-      bool isExist = await file.exists();
-      if (!isExist) throw ('ファイルが存在しません。$filepath');
-      //ファイルやフォルダが存在しない場合は読み込めません。
-      await file.writeAsString(filename);
-    } catch (e) {
-      print('in storeNameOfLocationFile');
-      print(e);
-      print('in storeNameOfLocationFile');
-    }
+    //ファイルが存在しない場合は、書き込めばファイルが新しく作成される。
+    // try {
+    //   bool isExist = await file.exists();
+    //   if (!isExist) throw ('ファイルが存在しません。$filepath');
+    //   //ファイルやフォルダが存在しない場合は読み込めません。
+    //   await file.writeAsString(filename);
+    // } catch (e) {
+    //   print('at storeNameOfLocationFile in gps_storage.dart');
+    //   print(e);
+    //   print('at storeNameOfLocationFile in gps_storage.dart');
+    // }
+    await file.writeAsString(filename);
   }
 
   ///権限の様子を見てエラーを返す
@@ -205,3 +218,7 @@ class GPSStorage {
         desiredAccuracy: LocationAccuracy.high);
   }
 }
+
+
+/// ver0.0.1
+/// 
