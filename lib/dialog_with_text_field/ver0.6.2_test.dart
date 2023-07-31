@@ -109,6 +109,7 @@ class MyGPSState extends State<MyGPS>
 }
 
 
-///ver0.6.1のtest用です
+///ver0.6.2のtest用です
+///START/STOP ボタンをtest側に実装しました。
 ///WrappingするウィジェットのStateにはMyWrapperTextfieldDialogImplementsを
 ///implementsしてもらいます。
