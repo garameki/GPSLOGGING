@@ -102,16 +102,18 @@ mixin MyGPSStorage {
       filename = await file.readAsString();
       if (filename == '') {
         flagError = false;
-        throw ('ファイル名が格納されていません。');
+        filename = 'fileIsEmpty.csv';
+        await file.writeAsString(filename);
+        throw ('ファイル名が格納されていません。とりあえず、inputDialogを導入するまではこの例外が出力されても良しとします。');
       }
     } catch (e) {
       print('at get filenameLocationFile on gps_storage.dart');
       print(e);
       print('at get filenameLocationFile in gps_storage.dart');
       if (flagError) {
-        return 'fileIsEmpty.csv';
-      } else {
         return 'fileIsNotExist.csv';
+      } else {
+        return 'fileIsEmpty.csv';
       }
     }
     return filename;
