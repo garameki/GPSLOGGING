@@ -29,9 +29,9 @@ class GPSStorage {
 
   ///sync/awaitを使うような静的な定数を持たないようにする.
 
-  static const String _foldaNameOfLocationFile = 'filenames/';
-  static const String _filenameNameOfLocationFile = 'filenameLocationFile.txt';
-  static const String _foldaLocationFiles = 'locations/';
+  final String _foldaNameOfLocationFile = 'filenames/';
+  final String _filenameNameOfLocationFile = 'filenameLocationFile.txt';
+  final String _foldaLocationFiles = 'locations/';
 
   ///このアプリの専用フォルダのルートパス
   Future<String> get _pathApplication async {
@@ -173,8 +173,7 @@ class GPSStorage {
     storePositions(contents: '$contentsBefore$linePosition\n');
   }
 
-  void storeNameOfLocationFile(
-      {String filename = _filenameNameOfLocationFile}) async {
+  void storeNameOfLocationFile({required String filename}) async {
     String pathApp = await _pathApplication;
     String filepath =
         '$pathApp$_foldaNameOfLocationFile$_filenameNameOfLocationFile';
