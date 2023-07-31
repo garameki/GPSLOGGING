@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tests/give_widget_key.dart' show MyApp;
+import 'dialog_with_text_field/ver0.6.2_test.dart' show MyApp;
 
 void main() {
   runApp(const MyApp());
