@@ -73,14 +73,15 @@ class MyGPSState extends State<MyGPS>
     });
   }
 
+  //////////////////////////////////////////////////////////////////////
+  ///statefulwidgetの子にキーを渡す場合には[initState]の中でキーを取得する//
+  ///statelesswidgetの場合にはコンストラクタの初期化時点でやる?/////////////
+  //////////////////////////////////////////////////////////////////////
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //////////////////////////////////////////////////////////////////////
-    ///statefulwidgetの子にキーを渡す場合には[initState]の中でキーを取得する//
-    ///statelesswidgetの場合にはコンストラクタの初期化時点でやる?/////////////
-    //////////////////////////////////////////////////////////////////////
+
     ///取得例
     ///GlobalKey keey = MyWrapperTextfieldDialog.ofElement(context).keyChild;
   }
@@ -88,13 +89,11 @@ class MyGPSState extends State<MyGPS>
   @override
   Widget build(BuildContext context) {
     if (_flagStarted) {
-      return Column(
-          //        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
-          children: <Widget>[
-            Text(_filename),
-            OutlinedButton(
-                onPressed: _callbackSTOP, child: const Text('STOP LOGGING'))
-          ]);
+      return Column(children: <Widget>[
+        Text(_filename),
+        OutlinedButton(
+            onPressed: _callbackSTOP, child: const Text('STOP LOGGING'))
+      ]);
     } else {
       return Column(
           //        children: <Widget>[Text(_filename), const Text('RENAME FILE')]);
