@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../gps_storage/ver0.2.0.dart';
 import '../dialog_with_text_field/ver0.7.1.dart';
+import '../colorScheme/color_schemes.g.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,10 +17,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       home: const TopWidget(),
     );
   }
@@ -111,10 +110,11 @@ class MyGPS extends StatefulWidget {
 class MyGPSState extends State<MyGPS>
     with MyGPSStorage
     implements MyWrapperTextfieldDialogImplements {
-  double lat = 0.0;
-  double lon = 0.0;
-  String ymd = 'GMT';
-  String filename = 'hello.csv';
+  String lat = '';
+  String lon = '';
+  String altitude = '';
+  String ymd = '';
+  String filename = '';
 
   bool flagStarted = false;
 
@@ -136,6 +136,11 @@ class MyGPSState extends State<MyGPS>
   void canceledForMyWrapperTextfieldDialog() {
     setState(() {
       flagStarted = false;
+      lat = '';
+      lon = '';
+      altitude = '';
+      ymd = '';
+      filename = '';
     });
   }
 
@@ -152,8 +157,9 @@ class MyGPSState extends State<MyGPS>
   void setLocation({required Position position}) async {
     setState(() {
       ymd = formatTimestamp(timestampJST: position.timestamp);
-      lon = position.longitude;
-      lat = position.latitude;
+      lon = position.longitude.toString();
+      altitude = position.altitude.toString();
+      lat = position.latitude.toString();
     });
     //ファイルに格納
     appendPosition(position: position);
@@ -190,6 +196,11 @@ class MyGPSState extends State<MyGPS>
   void _stopGPS() {
     setState(() {
       flagStarted = false;
+      lat = '';
+      lon = '';
+      altitude = '';
+      ymd = '';
+      filename = '';
       if (timer == null) return;
       timer!.cancel();
     });
@@ -207,6 +218,7 @@ class MyGPSState extends State<MyGPS>
               WidgetYMD(),
               WidgetLon(),
               WidgetLat(),
+              WidgetAltitude(),
             ])));
   }
 }
@@ -218,8 +230,8 @@ class WidgetFilename extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      MyGPS.ofWidget(context).filename.toString(),
-      style: Theme.of(context).textTheme.headlineMedium,
+      'filename:${MyGPS.ofWidget(context).filename.toString()}',
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 }
@@ -229,8 +241,8 @@ class WidgetYMD extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      MyGPS.ofWidget(context).ymd.toString(),
-      style: Theme.of(context).textTheme.headlineMedium,
+      'UTC:${MyGPS.ofWidget(context).ymd.toString()}',
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 }
@@ -240,7 +252,7 @@ class WidgetLon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      MyGPS.ofWidget(context).lon.toString(),
+      '経度:${MyGPS.ofWidget(context).lon}',
       style: Theme.of(context).textTheme.headlineMedium,
     );
   }
@@ -251,7 +263,18 @@ class WidgetLat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      MyGPS.ofWidget(context).lat.toString(),
+      '緯度:${MyGPS.ofWidget(context).lat}',
+      style: Theme.of(context).textTheme.headlineMedium,
+    );
+  }
+}
+
+class WidgetAltitude extends StatelessWidget {
+  const WidgetAltitude({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '標高:${MyGPS.ofWidget(context).altitude}',
       style: Theme.of(context).textTheme.headlineMedium,
     );
   }
@@ -282,8 +305,30 @@ class FloatingActionButtonGPSState extends State<FloatingActionButtonGPS> {
   late final VoidCallback stop;
   bool _flagStarted = false;
 
-  ///dialogによるファイル名の取得も含めた
-  ///ログの開始準備
+  late Color bgColorStart;
+  late Color bgColorStop;
+  late Color fgColorStart;
+  late Color fgColorStop;
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    fgColorStart = Theme.of(context).colorScheme.onPrimary;
+    bgColorStart = Theme.of(context).colorScheme.primary;
+    fgColorStop = Theme.of(context).colorScheme.onSecondary;
+    bgColorStop = Theme.of(context).colorScheme.secondary;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //エラー
+    //colorStart = Theme.of(context).colorScheme.primaryContainer;
+    //colorStop = Theme.of(context).colorScheme.onPrimaryContainer;
+  }
+
+  ///dialogによるファイル名の取得も含めたログの開始準備
   startGPS() {
     setState(() {
       TopWidget.ofWidget(context).startGPS();
@@ -307,8 +352,15 @@ class FloatingActionButtonGPSState extends State<FloatingActionButtonGPS> {
     _flagStarted = TopWidget.ofElement(context).flagStarted;
     return FloatingActionButton.extended(
       label: Text(_flagStarted ? 'STOP LOGGING' : 'START LOGGING',
-          style: Theme.of(context).textTheme.headlineMedium),
+          style: TextStyle(
+              color: _flagStarted ? fgColorStop : fgColorStart,
+              fontSize: Theme.of(context)
+                  .textTheme
+                  .headlineLarge!
+                  .fontSize)), // Theme.of(context).colorScheme.primary),
       onPressed: _flagStarted ? stopGPS : startGPS,
+      //foregroundColor: _flagStarted ? fgColorStop : fgColorStart,
+      backgroundColor: _flagStarted ? bgColorStop : bgColorStart,
     );
   }
 }
@@ -319,15 +371,16 @@ class FloatingActionButtonGPSState extends State<FloatingActionButtonGPS> {
 ///主に状態をやり取りするメソッドを導入しました。
 
 ///課題
-///cleared! 0.dialogで指定したファイル名に保存されていない！！！！！
-///1.ログをやめたら表示部を表示しないようにする。
-///2.ボタンの色を赤と緑のペアにする。
+///  cleared! 0.dialogで指定したファイル名に保存されていない！！！！！
+///  cleared! 1.ログをやめたら表示部を表示しないようにする。
+///  cleared! 2.ボタンの色を赤と緑のペアにする。
 ///3.衛星の数を表示する
 ///4.下からスワイプしてちっちゃくすると止まっちゃう
 ///5.上のところに絵文字を表示させる
-///6.高度も表示させる
-///7.拡張子の.csvは、自動で付ける。
+///  cleared! 6.高度も表示させる
+///  cleared! 7.拡張子の.csvは、自動で付ける。
 ///8.backgroundでも動くようにする。
 ///9.バッジをつけるようにする
+///10.locationへの変更
 
 
