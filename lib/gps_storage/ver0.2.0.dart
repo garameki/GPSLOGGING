@@ -30,6 +30,7 @@ mixin MyGPSStorage {
   final String _foldaNameOfLocationFile = 'filenames/';
   final String _filenameNameOfLocationFile = 'filenameLocationFile.txt';
   final String _foldaLocationFiles = 'locations/';
+  final String _extention = '.csv';
 
   ///このアプリの専用フォルダのルートパス
   Future<String> get _pathApplication async {
@@ -79,8 +80,9 @@ mixin MyGPSStorage {
   String formatPositionToLine(Position position) {
     double lon = position.longitude;
     double lat = position.latitude;
+    double altitude = position.altitude;
     String time = formatTimestamp(timestampJST: position.timestamp);
-    return '$time,$lon,$lat';
+    return '$time,$lon,$lat,$altitude';
   }
 
   ///Locationが格納されるファイルのファイル名を返す
@@ -102,7 +104,7 @@ mixin MyGPSStorage {
       filename = await file.readAsString();
       if (filename == '') {
         flagError = false;
-        filename = 'fileIsEmpty.csv';
+        filename = 'fileIsEmpty';
         await file.writeAsString(filename);
         throw ('ファイル名が格納されていません。とりあえず、inputDialogを導入するまではこの例外が出力されても良しとします。');
       }
@@ -111,9 +113,9 @@ mixin MyGPSStorage {
       print(e);
       print('at get filenameLocationFile in gps_storage.dart');
       if (flagError) {
-        return 'fileIsNotExist.csv';
+        return 'fileIsNotExist';
       } else {
-        return 'fileIsEmpty.csv';
+        return 'fileIsEmpty';
       }
     }
     return filename;
@@ -190,7 +192,7 @@ mixin MyGPSStorage {
     //   print(e);
     //   print('at storeNameOfLocationFile in gps_storage.dart');
     // }
-    await file.writeAsString(filename);
+    await file.writeAsString('$filename$_extention');
   }
 
   ///権限の様子を見てエラーを返す
