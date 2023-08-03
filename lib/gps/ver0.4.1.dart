@@ -110,11 +110,12 @@ class MyGPS extends StatefulWidget {
 class MyGPSState extends State<MyGPS>
     with MyGPSStorage
     implements MyWrapperTextfieldDialogImplements {
+  ///for Indicate
   String lat = '';
   String lon = '';
   String altitude = '';
   String ymd = '';
-  String filename = '';
+  String filename = ''; //filenameNameOfLocationFile
 
   bool flagStarted = false;
 
@@ -140,7 +141,7 @@ class MyGPSState extends State<MyGPS>
       lon = '';
       altitude = '';
       ymd = '';
-      filename = '';
+      //Dame zettai. filename = '';
     });
   }
 
@@ -200,7 +201,7 @@ class MyGPSState extends State<MyGPS>
       lon = '';
       altitude = '';
       ymd = '';
-      filename = '';
+      //Dame zettei. filename = '';
       if (timer == null) return;
       timer!.cancel();
     });
@@ -382,5 +383,8 @@ class FloatingActionButtonGPSState extends State<FloatingActionButtonGPS> {
 ///8.backgroundでも動くようにする。
 ///9.バッジをつけるようにする
 ///10.locationへの変更
-
-
+///11.csv.csvになっちゃう
+///12.Google Driveにアップロードする
+///13.dialogでcancel押した場合にもtextfieldの値が保存される(blank時に
+///キャンセルするとそのあとの保存が変になる。)
+///このバグ、詰めたほうがいい！！！！もう寝る。

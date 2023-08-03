@@ -30,7 +30,7 @@ mixin MyGPSStorage {
   final String _foldaNameOfLocationFile = 'filenames/';
   final String _filenameNameOfLocationFile = 'filenameLocationFile.txt';
   final String _foldaLocationFiles = 'locations/';
-  final String _extention = '.csv';
+  final String _extension = '.csv';
 
   ///このアプリの専用フォルダのルートパス
   Future<String> get _pathApplication async {
@@ -149,7 +149,7 @@ mixin MyGPSStorage {
   Future<String> readPositions() async {
     String contents = '';
     String filepath = await _filepathLocationFile;
-    File file = File(filepath);
+    File file = File('$filepath$_extension');
     bool isExist = await file.exists();
     if (!isExist) {
       //ファイルが存在しない
@@ -164,7 +164,7 @@ mixin MyGPSStorage {
   ///現在使っている位置情報ファイルへの書き込み
   void storePositions({required String contents}) async {
     String filepath = await _filepathLocationFile;
-    File file = File(filepath);
+    File file = File('$filepath$_extension');
     file.writeAsString(contents.toString());
   }
 
@@ -192,7 +192,7 @@ mixin MyGPSStorage {
     //   print(e);
     //   print('at storeNameOfLocationFile in gps_storage.dart');
     // }
-    await file.writeAsString('$filename$_extention');
+    await file.writeAsString(filename);
   }
 
   ///権限の様子を見てエラーを返す
