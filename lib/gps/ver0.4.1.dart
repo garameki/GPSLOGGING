@@ -383,8 +383,9 @@ class FloatingActionButtonGPSState extends State<FloatingActionButtonGPS> {
 ///8.backgroundでも動くようにする。
 ///9.バッジをつけるようにする
 ///10.locationへの変更
-///11.csv.csvになっちゃう
+///  cleared! 11.csv.csvになっちゃう
 ///12.Google Driveにアップロードする
-///13.dialogでcancel押した場合にもtextfieldの値が保存される(blank時に
-///キャンセルするとそのあとの保存が変になる。)
-///このバグ、詰めたほうがいい！！！！もう寝る。
+///  cleared! 13.dialogでcancel押した場合にもtextfieldの値が保存される(blank時に
+///  キャンセルするとそのあとの保存が変になる。)
+///  このバグ、詰めたほうがいい！！！！もう寝る。 
+///  cleared! 14.ファイル名に使えない文字をはじく

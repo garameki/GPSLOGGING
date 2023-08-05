@@ -54,6 +54,8 @@ class _MyTextfieldDialogState extends State<_MyTextfieldDialog> {
     callbackOfOkButton = _callbackNotOk;
   }
 
+  final reg = RegExp(r'[\\\/:\*\?\"<>\|]');
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +73,15 @@ class _MyTextfieldDialogState extends State<_MyTextfieldDialog> {
       isNotBlank();
     }
     controller.addListener(() {
+      if (reg.hasMatch(controller.text)) {
+        int len = controller.text.length;
+        String stringNew = controller.text.substring(0, len - 1);
+        controller.text = stringNew;
+        controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: controller.text.length));
+        print(stringNew);
+      }
+
       if (controller.text.isEmpty) {
         isBlank();
       } else {
