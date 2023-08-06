@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
-import 'gps/ver0.4.1.dart' show MyApp;
+//import 'gps/ver0.4.1.dart' show MyApp;
+//import 'tests/location.dart' show MyApp;
 
-import '../colorScheme/color_schemes.g.dart';
+// void main() {
+//   runApp(const MyApp());
+// }
 
-void main() {
-  runApp(const MyApp());
-}
+//import 'tests/app_lifecycle.dart';
+//void main() => runApp(const WidgetBindingObserverExampleApp());
+
+import 'tests/workmanager.dart' show MyApp;
+
+void main() => runApp(MyApp());
+
+
+
 
 ///theme color builder
 ///https://zenn.dev/10_tofu_01/articles/adopt_material_color_generotor
 ///https://m3.material.io/theme-builder#/custom
+
+
+//import '../colorScheme/color_schemes.g.dart';
+
 // class MyApp extends StatelessWidget {
 //   const MyApp({Key? key}) : super(key: key);
 
