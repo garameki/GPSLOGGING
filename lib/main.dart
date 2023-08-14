@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 //import 'tests/workmanager/case002.dart' show MyApp;
 //import 'tests/workmanager/case003.dart' show MyApp;
-import 'tests/isolate/bad_case001.dart';
+import 'tests/isolate/bad_case002.dart';
 
 //void main() => runApp(MyApp());
 //void main() => otherFunction();
