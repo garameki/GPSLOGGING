@@ -11,11 +11,11 @@ import 'package:flutter/material.dart';
 
 //import 'tests/workmanager/case002.dart' show MyApp;
 //import 'tests/workmanager/case003.dart' show MyApp;
-import 'tests/isolate/queue.dart';
+import 'tests/isolate/bad_case001.dart';
 
 //void main() => runApp(MyApp());
 //void main() => otherFunction();
-void main() => main2();
+void main() => otherFunction();
 
 
 
