@@ -9,9 +9,13 @@ import 'package:flutter/material.dart';
 //import 'tests/app_lifecycle.dart';
 //void main() => runApp(const WidgetBindingObserverExampleApp());
 
-import 'tests/workmanager.dart' show MyApp;
+//import 'tests/workmanager/case002.dart' show MyApp;
+//import 'tests/workmanager/case003.dart' show MyApp;
+import 'tests/isolate/queue.dart';
 
-void main() => runApp(MyApp());
+//void main() => runApp(MyApp());
+//void main() => otherFunction();
+void main() => main2();
 
 
 
