@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../colorScheme/color_schemes.g.dart';
 import 'dart:async';
-import 'package:flutter/services.dart';
-import 'dart:isolate';
+//import 'package:flutter/services.dart';
+//import 'dart:isolate';
 
 void main() {
   runApp(const MyApp());
@@ -105,3 +105,6 @@ class _TopWidgetState extends State<TopWidget>
     );
   }
 }
+
+///drawer menu を実装してみた。
+
