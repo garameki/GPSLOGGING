@@ -15,11 +15,12 @@ import 'package:flutter/material.dart';
 //import 'tests/isolate/bad_case004.dart';
 //void main() => runApp(const MyApp());
 
-import 'tests/background_location/example.dart' show MyApp;
+//import 'tests/background_location/example.dart' show MyApp;
+//void main() => runApp(MyApp());
 
-void main() => runApp(MyApp());
+import 'tests/background_timer/case001.dart' show MyApp;
 
-
+void main() => runApp(const MyApp());
 
 ///theme color builder
 ///https://zenn.dev/10_tofu_01/articles/adopt_material_color_generotor
