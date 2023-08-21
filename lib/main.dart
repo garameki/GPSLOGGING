@@ -18,9 +18,14 @@ import 'package:flutter/material.dart';
 //import 'tests/background_location/example.dart' show MyApp;
 //void main() => runApp(MyApp());
 
-import 'tests/background_timer/widget_binding_observer.dart' show MyApp;
+//import 'tests/background_timer/widget_binding_observer.dart' show MyApp;
 
-void main() => runApp(const MyApp());
+//void main() => runApp(const MyApp());
+
+import 'tests/app_lifecycle.dart';
+
+void main() => runApp(const WidgetBindingObserverExampleApp());
+
 
 ///theme color builder
 ///https://zenn.dev/10_tofu_01/articles/adopt_material_color_generotor
