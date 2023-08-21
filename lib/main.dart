@@ -22,10 +22,12 @@ import 'package:flutter/material.dart';
 
 //void main() => runApp(const MyApp());
 
-import 'tests/app_lifecycle.dart';
+//import 'tests/app_lifecycle.dart';
+//void main() => runApp(const WidgetBindingObserverExampleApp());
 
-void main() => runApp(const WidgetBindingObserverExampleApp());
+import 'tests/isolate/bad_case005.dart';
 
+void main() => runApp(const MyApp());
 
 ///theme color builder
 ///https://zenn.dev/10_tofu_01/articles/adopt_material_color_generotor
