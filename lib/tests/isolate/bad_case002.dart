@@ -1,8 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:isolate';
 
@@ -36,8 +33,9 @@ void isolateEntry(List<dynamic> message) async {
   late Timer timer;
   Timer? onTime(timer) {
     getPos().then((pos) {
-      if (flagStarted)
+      if (flagStarted) {
         printPos(count++, pos); //このifで余分なevent queueの実行結果をignoreする。
+      }
     }).onError((error, stackTrace) {
       print('$error $stackTrace');
     });
@@ -60,8 +58,9 @@ void isolateEntry(List<dynamic> message) async {
       if (flagStarted) {
         timer.cancel();
         print('canceled');
-      } else
+      } else {
         throw ('logic conflict');
+      }
       flagStarted = false;
     });
   }

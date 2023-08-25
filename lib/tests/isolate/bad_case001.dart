@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:isolate';
 
@@ -41,7 +39,7 @@ void isolateEntry(List<dynamic> message) async {
   bool allowGetPos = true;
   ReceivePort receivePort = ReceivePort();
   receivePort.listen((messageListened) {
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       dynamic command = messageListened[0];
       dynamic arg = messageListened[1];
       print('$name : received [0] : $command');
@@ -86,6 +84,7 @@ void isolateEntry(List<dynamic> message) async {
       }
       return timer;
     });
+    return null;
   }
 
   //first get position

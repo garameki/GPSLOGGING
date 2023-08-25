@@ -14,8 +14,7 @@ void main() {
 
 class CountData extends InheritedWidget {
   const CountData({Key key, required Widget child, required this.count})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final int count;
   @override
@@ -25,7 +24,7 @@ class CountData extends InheritedWidget {
 }
 
 class MainWidget extends StatefulWidget {
-  MainWidget(Key? key);
+  MainWidget(Key? key, {super.key});
 
   final Widget child = Scaffold(
     appBar: AppBar(),
@@ -43,7 +42,7 @@ class _MainWidgetState extends State<MainWidget> {
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         timeCount++;
         print(timeCount)

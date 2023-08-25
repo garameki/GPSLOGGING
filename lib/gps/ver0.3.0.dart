@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../gps_storage/ver0.2.0.dart';
 
-///next feature
-import '../dialog_with_text_field/ver0.6.2.dart';
 
 void main() {
   runApp(const MyApp());

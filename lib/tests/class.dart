@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 //https://qiita.com/agajo/items/375d5415cb79689a925c
 
@@ -42,8 +41,7 @@ class MyApp extends StatelessWidget {
 */
 class CountData extends InheritedWidget {
   const CountData({Key? key, required Widget child, required this.count})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final int count;
   @override
@@ -53,7 +51,7 @@ class CountData extends InheritedWidget {
 }
 
 class MainWidget extends StatefulWidget {
-  MainWidget(Key? key, this.name);
+  MainWidget(Key? key, this.name, {super.key});
 
   String name2 = name;
   String name;
@@ -75,8 +73,7 @@ class _MainWidgetState extends State<MainWidget> {
 class MyMessageData extends InheritedWidget {
   const MyMessageData(
       {required Key key, required Widget child, required this.message})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final String? message;
 

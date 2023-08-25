@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,7 +8,7 @@ import 'package:workmanager/workmanager.dart';
 
 import 'package:geolocator/geolocator.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 const simpleTaskKey = "be.tramckrijte.workmanagerExample.simpleTask";
 const rescheduledTaskKey = "be.tramckrijte.workmanagerExample.rescheduledTask";
@@ -95,6 +94,8 @@ void callbackDispatcher() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -105,7 +106,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Flutter WorkManager Example"),
+          title: const Text("Flutter WorkManager Example"),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -115,10 +116,10 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 Text(
                   "Plugin initialization",
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 ElevatedButton(
-                  child: Text("Start the Flutter background service"),
+                  child: const Text("Start the Flutter background service"),
                   onPressed: () {
                     Workmanager().initialize(
                       callbackDispatcher,
@@ -126,7 +127,7 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 //This task runs periodically
                 //It will wait at least 10 seconds before its first launch
@@ -161,7 +162,6 @@ class _MyAppState extends State<MyApp> {
                 //This task runs periodically
                 //It will run about every hour
                 ElevatedButton(
-                    child: Text("Register 15min later Periodic Task (Android)"),
                     onPressed: Platform.isAndroid
                         ? () {
                             late String key;
@@ -180,14 +180,15 @@ class _MyAppState extends State<MyApp> {
                             //   frequency: Duration(hours: 1),
                             // );
                           }
-                        : null),
-                SizedBox(height: 16),
+                        : null,
+                    child: const Text("Register 15min later Periodic Task (Android)")),
+                const SizedBox(height: 16),
                 Text(
                   "Task cancellation",
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 ElevatedButton(
-                  child: Text("Cancel All"),
+                  child: const Text("Cancel All"),
                   onPressed: () async {
                     await Workmanager().cancelAll();
                     print('Cancel all tasks completed///////////////');

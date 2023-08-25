@@ -27,7 +27,7 @@ class _TopWidget extends StatelessWidget {
 ////////////////////ここまではお約束///////////////////////////////////////
 
 class _MyInherited extends InheritedWidget {
-  const _MyInherited({super.key, required super.child, required this.state});
+  const _MyInherited({required super.child, required this.state});
   final MyState state;
 
   @override
@@ -35,7 +35,7 @@ class _MyInherited extends InheritedWidget {
 }
 
 class _My extends StatefulWidget {
-  const _My({super.key});
+  const _My();
 
   static MyState ofWidget(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_MyInherited>()!.state;

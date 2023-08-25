@@ -51,7 +51,7 @@ class _TopWidgetState extends State<TopWidget>
   @override
   Future<AppExitResponse> didRequestAppExit() async {
     print('GOOD-BYE');
-    Future.delayed(Duration(seconds: 5));
+    Future.delayed(const Duration(seconds: 5));
     return AppExitResponse.exit;
   }
 

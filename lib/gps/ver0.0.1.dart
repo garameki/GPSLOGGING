@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/date_time_patterns.dart';
 
 import 'package:intl/intl.dart';
 //GPSを操作する

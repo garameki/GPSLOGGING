@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:ffi';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/gps/ver0.1.1.dart';
-import '../../gps_storage/ver0.2.0.dart';
 
 import 'package:flutter/services.dart';
 import 'dart:isolate';
@@ -82,8 +78,9 @@ void isolateEntry(List<dynamic> message) async {
       if (flagStarted) {
         timer.cancel();
         print('canceled');
-      } else
+      } else {
         throw ('logic conflict');
+      }
       flagStarted = false;
     });
   }

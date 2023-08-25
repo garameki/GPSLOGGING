@@ -1,15 +1,12 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'package:geolocator/geolocator.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 const simpleTaskKey = "be.tramckrijte.workmanagerExample.simpleTask";
 const rescheduledTaskKey = "be.tramckrijte.workmanagerExample.rescheduledTask";
@@ -63,6 +60,8 @@ void callbackDispatcher() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -73,7 +72,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Flutter WorkManager Example"),
+          title: const Text("Flutter WorkManager Example"),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -83,10 +82,10 @@ class _MyAppState extends State<MyApp> {
               children: <Widget>[
                 Text(
                   "Plugin initialization",
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 ElevatedButton(
-                  child: Text("Start the Flutter background service"),
+                  child: const Text("Start the Flutter background service"),
                   onPressed: () {
                     Workmanager().initialize(
                       callbackDispatcher,
@@ -94,12 +93,12 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
 
                 //This task runs once.
                 //Most likely this will trigger immediately
                 ElevatedButton(
-                  child: Text("Register OneOff Task"),
+                  child: const Text("Register OneOff Task"),
                   onPressed: () {
                     String key = UniqueKey().toString();
                     Workmanager().registerOneOffTask(
@@ -112,13 +111,13 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   "Task cancellation",
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 ElevatedButton(
-                  child: Text("Cancel All"),
+                  child: const Text("Cancel All"),
                   onPressed: () async {
                     await Workmanager().cancelAll();
                     print('Cancel all tasks completed///////////////');

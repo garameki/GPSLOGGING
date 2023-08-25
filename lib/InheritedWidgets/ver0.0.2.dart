@@ -33,8 +33,7 @@ class MyApp extends StatelessWidget {
 
 class CountData extends InheritedWidget {
   const CountData({Key? key, required Widget child, required this.count})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final int count;
   @override
@@ -87,8 +86,7 @@ class _MainWidgetState extends State<MainWidget> {
 class MyMessageData extends InheritedWidget {
   const MyMessageData(
       {required Key key, required Widget child, required this.message})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final String? message;
 

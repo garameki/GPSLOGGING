@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:flutter/services.dart';
 import 'dart:isolate';
 
 import 'package:geolocator/geolocator.dart';
@@ -12,7 +11,9 @@ import 'package:geolocator/geolocator.dart';
 import 'dart:io' show Directory, File;
 import 'package:path_provider/path_provider.dart';
 
-import '../../colorScheme/color_schemes.g.dart';
+
+import 'package:flutter_isolate/flutter_isolate.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 main() => runApp(const MyApp());
 
@@ -34,7 +35,9 @@ Future<Position> getPos() {
 writePos(int ii, Position pos) async {
   Directory directory = await getApplicationSupportDirectory();
   File filePath = File('${directory.path}/location.csv');
-  await filePath.create();
+  if (filePath.existsSync()) {
+    await filePath.create();
+  }
   filePath.writeAsString('');
   String before = await filePath.readAsString();
   String line = '${ii.toString()},${pos.timestamp}';
@@ -46,28 +49,68 @@ writePos(int ii, Position pos) async {
 Future<String> readPos() async {
   Directory directory = await getApplicationSupportDirectory();
   File filePath = File('${directory.path}/location.csv');
-  await filePath.create();
+  if (filePath.existsSync()) {
+    await filePath.create();
+  }
   return filePath.readAsString();
 }
 
 @pragma('vm:entry-point')
-int base = 3; //最低15秒は必要.そうでないとevent queueに溜まったFuture<Position>の解凍で同時刻に吐く
+void downloaderCallback(
+    //String id, DownloadTaskStatus status, int progress) {
+    String id,
+    dynamic status,
+    int progress) {
+  print("progress: $progress");
+}
+
+@pragma('vm:entry-point')
+int base = 5; //最低15秒は必要.そうでないとevent queueに溜まったFuture<Position>の解凍で同時刻に吐く
+
+@pragma('vm:entry-point')
+void isolateEntry2(List<dynamic> message) async {
+  Timer timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    print('isolate2');
+  });
+}
 
 // Top level function
 @pragma('vm:entry-point')
 void isolateEntry(List<dynamic> message) async {
+  ///from flutter_isolate example
+
+  print('+++++++++++++++++++++++++++++');
+  getTemporaryDirectory().then((dir) async {
+    print("isolate2 temporary directory: $dir");
+
+    // await FlutterDownloader.initialize(debug: true);
+    // FlutterDownloader.registerCallback(downloaderCallback);
+
+    // final taskId = await FlutterDownloader.enqueue(
+    //     url:
+    //         "https://raw.githubusercontent.com/rmawatson/flutter_isolate/master/README.md",
+    //     savedDir: dir.path);
+  });
+
   bool flagStarted = false;
+  bool flagPaused = false;
   int count = 0;
   late Timer timer;
+
+  late SendPort sendPort;
   Timer? onTime(timer) {
     getPos().then((pos) {
       if (flagStarted) {
-        writePos(count++, pos); //このifで余分なevent queueの実行結果をignoreする。
-        print('isolate : measured!');
+        writePos(count, pos); //このifで余分なevent queueの実行結果をignoreする。
+        if (!flagPaused) {
+          sendPort.send(['measured', '']);
+        }
+        print('isolate : measured! $count');
       }
     }).onError((error, stackTrace) {
       print('$error $stackTrace');
     });
+    count++;
     return timer;
   }
 
@@ -94,38 +137,43 @@ void isolateEntry(List<dynamic> message) async {
     });
   }
 
-  final name = Isolate.current.debugName;
+  const name = 'isolate';
 
   ReceivePort receivePort = ReceivePort();
-  SendPort sendPort = message[0];
-  RootIsolateToken rootToken = message[1];
-  BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
+  sendPort = message[0];
+//  RootIsolateToken rootToken = message[1];
+//  BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
   sendPort.send(['handshake', receivePort.sendPort]);
   receivePort.listen((messageListened) {
-    scheduleMicrotask(() {
-      dynamic command = messageListened[0];
-      dynamic arg = messageListened[1];
-      print('$name : received [0] : $command');
-      print('$name : received [1] : $arg');
-      switch (command) {
-        case 'print':
-          print('$name : received message : $arg');
-          break;
-        case 'start':
-          count = 0;
-          start();
-          break;
-        case 'stop':
-          stop();
-          break;
-        default:
-          print('$name : not available command : $command');
-          break;
-      }
-    });
+    dynamic command = messageListened[0];
+    dynamic arg = messageListened[1];
+    print('$name : received [0] : $command');
+    print('$name : received [1] : $arg');
+    switch (command) {
+      case 'print':
+        print('$name : received message : $arg');
+        break;
+      case 'start':
+        count = 0;
+        start();
+        break;
+      case 'stop':
+        stop();
+        break;
+      case 'exit':
+        FlutterIsolate.killAll();
+      case 'inactive':
+      case 'paused':
+        flagPaused = true;
+        break;
+      case 'resumed':
+        flagPaused = false;
+        break;
+      default:
+        print('$name : not available command : $command');
+        break;
+    }
   });
-
-  //throw ('ooooooooooooo error oooooooooooo');
 }
 
 //shake hands
@@ -178,82 +226,56 @@ void isolateEntry(List<dynamic> message) async {
 //
 //
 @pragma('vm:entry-point')
-Future<Isolate> mainIsolate() async {
+Future<SendPort> mainIsolate(TopWidgetState state) async {
   //isolateEntryよりも、こっちのMainのほうがkillされる可能性のほうが高い。
-  final String? name = Isolate.current.debugName;
+  const String name = 'main';
   bool flagHandshaked = false;
   late SendPort sendPort;
   ReceivePort receivePort = ReceivePort();
   RawReceivePort rawReceivePort = RawReceivePort((event) {});
 
-  RootIsolateToken rootToken = RootIsolateToken.instance!;
-  Isolate isolate = await Isolate.spawn<List<dynamic>>(
-      isolateEntry, [receivePort.sendPort, rootToken],
-      paused: true);
+//  RootIsolateToken rootToken = RootIsolateToken.instance!;
+  FlutterIsolate isolate = await FlutterIsolate.spawn<List<dynamic>>(
+      isolateEntry, [receivePort.sendPort, '']);
 
-  await Future.delayed(const Duration(seconds: 2)); //handshakeに数秒かかる
-  isolate.resume(isolate.pauseCapability as Capability);
-  receivePort.listen((messageReceived) {
-    Future(() {
-      dynamic command = messageReceived[0];
-      dynamic arg = messageReceived[1];
-      print('$name : received [0] : $command');
-      print('$name : received [1] : $arg');
-
-      switch (command) {
-        case 'handshake':
-          sendPort = arg;
-          flagHandshaked = true;
-          isolate.addOnExitListener(
-              receivePort.sendPort, //entryの挙動。entryがmainに対してsendする。
-              response: ['print', '${isolate.debugName} is EXITED']);
-          isolate.addErrorListener(receivePort.sendPort);
-          Isolate.current
-              .addOnExitListener(receivePort.sendPort, response: ['exit', '']);
-          break;
-        case 'print':
-          print('$name : received message : $arg ');
-          break;
-        case 'exit':
-          isolate.kill();
-          break;
-        default:
-          print('$name : error : $command');
-          print('$name : error : $arg');
-          break;
-      }
-    });
-  });
   await Future.delayed(const Duration(milliseconds: 500)); //handshakeに数秒かかる
-  if (flagHandshaked) {
-    sendPort.send(['print', 'Hello']);
-  } else {
-    throw ('$name : can not Hello because of not having handshaked');
-  }
-  int PAUSE = base * 3;
-  int PLAY = base * 3;
+  receivePort.listen((messageReceived) {
+    dynamic command = messageReceived[0];
+    dynamic arg = messageReceived[1];
+    print('$name : received [0] : $command');
+    print('$name : received [1] : $arg');
 
-  Future(() async {
-    print('start');
-    sendPort.send(['start', '']);
-    // await Future.delayed(Duration(seconds: PLAY));
-    // print('stop');
-    // sendPort.send(['stop', '']);
-    // await Future.delayed(Duration(seconds: PAUSE));
-    // print('start');
-    // sendPort.send(['start', '']);
-    // await Future.delayed(Duration(seconds: PLAY));
-    // print('stop');
-    // sendPort.send(['stop', '']);
-    // await Future.delayed(Duration(seconds: PLAY));
-    // print('start');
-    // sendPort.send(['start', '']);
-    // await Future.delayed(Duration(seconds: PLAY));
-    // print('stop');
-    // sendPort.send(['stop', '']);
+    if (!flagHandshaked && command != 'handshake') {
+      throw ('Be sure to handshake first!');
+    }
+    switch (command) {
+      case 'handshake':
+        sendPort = arg;
+        flagHandshaked = true;
+        break;
+      case 'print':
+        print('$name : received message : $arg ');
+        break;
+      case 'start': //must be sent from widget
+        sendPort.send(['start', '']);
+        break;
+      case 'exit': //must be sent from widget
+        sendPort.send(['exit', '']);
+        break;
+      case 'measured':
+//        state.onMeasured();
+        break;
+      case 'stateChanged':
+        sendPort.send([arg, '']);
+        break;
+      default:
+        print('$name : error : $command');
+        print('$name : error : $arg');
+        break;
+    }
   });
 
-  return isolate;
+  return receivePort.sendPort;
 }
 
 class MyApp extends StatelessWidget {
@@ -264,8 +286,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
-      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+//       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+//       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       home: const TopWidget(),
     );
   }
@@ -275,44 +301,61 @@ class TopWidget extends StatefulWidget {
   const TopWidget({super.key});
 
   @override
-  State<TopWidget> createState() => _TopWidgetState();
+  State<TopWidget> createState() => TopWidgetState();
 }
 
-class _TopWidgetState extends State<TopWidget> {
-  _TopWidgetState();
+class TopWidgetState extends State<TopWidget> with WidgetsBindingObserver {
+  TopWidgetState();
   String text = '';
-  late Timer timer;
-  late Isolate isolate;
+  late SendPort sendPortToMain;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    mainIsolate().then((value) {
-      isolate = value;
+    WidgetsBinding.instance.addObserver(this);
+    mainIsolate(this).then((SendPort sendport) {
+      sendPortToMain = sendport;
+      sendPortToMain.send(['start', '']);
     });
-    timer = Timer.periodic(const Duration(seconds: 1), onTime);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    sendPortToMain.send(['stateChanged', state.name]);
   }
 
   @override
   void dispose() {
-    timer.cancel();
-    isolate.kill(priority: Isolate.beforeNextEvent);
+    sendPortToMain.send(['exit', '']);
     super.dispose();
   }
 
-  Timer? onTime(Timer? timer) {
-    setState(() {
-      readPos().then((value) {
+  @override
+  void didUpdateWidget(covariant TopWidget oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    print('*************didUpdateWidget********************************');
+    //呼び出されない
+  }
+
+  void onMeasured() {
+    readPos().then((value) {
+      setState(() {
         text = value;
         print('main : read!');
       });
     });
-    return timer;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text(text);
+    return Scaffold(
+        appBar: AppBar(
+          elevation: 2,
+          title: const Text("Material Theme Builder"),
+        ),
+        body: Center(child: Text(text)));
   }
 }
 
@@ -320,9 +363,9 @@ class _TopWidgetState extends State<TopWidget> {
 
 ///やっていること
 ///isolate内で位置情報を計測してファイルに書き込む(Timer使用)
-///それをmain isolateで読み出して画面に表示する(Timer使用)
-///つまり、mainとisolateは同期してません。
+///portを使用してmainに更新を伝える
+///mainはそれを受けてファイルを読み出し、画面を更新する
 ///
-///readするたびにsetStateしているので無駄です。
+///つまり、mainとisolateを同期してみた。
 
 //完全なバックグラウンドでうごきません。

@@ -7,8 +7,7 @@ void main() {
 class MessageData1 extends InheritedWidget {
   const MessageData1(
       {required Key key, required Widget child, required this.message})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   final String? message;
 

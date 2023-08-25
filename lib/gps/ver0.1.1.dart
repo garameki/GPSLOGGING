@@ -53,7 +53,7 @@ class GPSStorage {
   static const String _foldaNameOfLocationFile = 'filenames/';
   static const String _filenameNameOfLocationFile = 'filenameLocationFile.txt';
   static const String _foldaLocationFiles = 'locations/';
-  String _filenameLocationFile = 'dummy.csv';
+  final String _filenameLocationFile = 'dummy.csv';
 
   ///このアプリの専用フォルダのルートパス
   Future<String> get _pathApplication async {

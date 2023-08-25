@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
   MyHomePage any = MyHomePage(
-      title: "ichikoro", greeting: (val1, val2) => print(val1 + " " + val2));
+      title: "ichikoro", greeting: (val1, val2) => print("$val1 $val2"));
 }
 
 class MyApp extends StatelessWidget {

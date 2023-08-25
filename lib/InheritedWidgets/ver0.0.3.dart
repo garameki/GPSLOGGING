@@ -33,8 +33,7 @@ class MyApp extends StatelessWidget {
 ///ということである！
 class CountData extends InheritedWidget {
   const CountData({Key? key, required Widget child, required this.count})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   ///[InheritedElement]が保持している何らかのデータ（この場合[count]）に
   ///変更が入ったときにこのWidgetを参照しようとしている子孫に[_dirty]フラグを

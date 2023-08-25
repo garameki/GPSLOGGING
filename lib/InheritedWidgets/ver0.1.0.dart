@@ -107,7 +107,7 @@ class WidgetA extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('WidgetA');
-    return Text(TopWidget.ofWidget(context)!.count.toString());
+    return Text(TopWidget.ofWidget(context).count.toString());
   }
 
   ///ここに[setState()]を置きたいのだが、きっかけの関数がない

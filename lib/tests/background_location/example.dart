@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 ///class FlutterExtensionの
 ///static int minSdkVersion = 16　を　18　にする
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -37,13 +37,13 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: ListView(
             children: <Widget>[
-              locationData('Latitude: ' + latitude),
-              locationData('Longitude: ' + longitude),
-              locationData('Altitude: ' + altitude),
-              locationData('Accuracy: ' + accuracy),
-              locationData('Bearing: ' + bearing),
-              locationData('Speed: ' + speed),
-              locationData('Time: ' + time),
+              locationData('Latitude: $latitude'),
+              locationData('Longitude: $longitude'),
+              locationData('Altitude: $altitude'),
+              locationData('Accuracy: $accuracy'),
+              locationData('Bearing: $bearing'),
+              locationData('Speed: $speed'),
+              locationData('Time: $time'),
               ElevatedButton(
                   onPressed: () async {
                     await BackgroundLocation.setAndroidNotification(
@@ -77,17 +77,17 @@ class _MyAppState extends State<MyApp> {
                       ''');
                     });
                   },
-                  child: Text('Start Location Service')),
+                  child: const Text('Start Location Service')),
               ElevatedButton(
                   onPressed: () {
                     BackgroundLocation.stopLocationService();
                   },
-                  child: Text('Stop Location Service')),
+                  child: const Text('Stop Location Service')),
               ElevatedButton(
                   onPressed: () {
                     getCurrentLocation();
                   },
-                  child: Text('Get Current Location')),
+                  child: const Text('Get Current Location')),
             ],
           ),
         ),
@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
   Widget locationData(String data) {
     return Text(
       data,
-      style: TextStyle(
+      style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 18,
       ),
@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> {
 
   void getCurrentLocation() {
     BackgroundLocation().getCurrentLocation().then((location) {
-      print('This is current Location ' + location.toMap().toString());
+      print('This is current Location ${location.toMap()}');
     });
   }
 

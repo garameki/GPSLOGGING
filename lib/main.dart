@@ -25,14 +25,16 @@ import 'package:flutter/material.dart';
 //import 'tests/app_lifecycle.dart';
 //void main() => runApp(const WidgetBindingObserverExampleApp());
 
-import 'tests/isolate/bad_case005.dart';
+// import 'tests/isolate/bad_case006.dart';
+// void main() => runApp(const MyApp());
+
+import 'tests/background_timer/flutter_isolate.dart' show MyApp;
 
 void main() => runApp(const MyApp());
 
 ///theme color builder
 ///https://zenn.dev/10_tofu_01/articles/adopt_material_color_generotor
 ///https://m3.material.io/theme-builder#/custom
-
 
 //import '../colorScheme/color_schemes.g.dart';
 
@@ -75,3 +77,5 @@ void main() => runApp(const MyApp());
 //             FloatingActionButton(onPressed: () => {}, tooltip: 'Increment'));
 //   }
 // }
+
+

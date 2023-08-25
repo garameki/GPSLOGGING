@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -15,12 +15,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: TopPage(),
+      home: const TopPage(),
     );
   }
 }
 
 class TopPage extends StatefulWidget {
+  const TopPage({super.key});
+
   @override
   _TopPageState createState() => _TopPageState();
 }
@@ -32,24 +34,24 @@ class _TopPageState extends State<TopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ダイアログ内でsetState'),
+        title: const Text('ダイアログ内でsetState'),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () async {
           await showDialog(
             context: context,
             builder: (context) {
               return StatefulBuilder(builder: (context, setState) {
                 return SimpleDialog(
-                    contentPadding: EdgeInsets.all(0.0),
-                    titlePadding: EdgeInsets.all(0.0),
-                    title: Container(
+                    contentPadding: const EdgeInsets.all(0.0),
+                    titlePadding: const EdgeInsets.all(0.0),
+                    title: SizedBox(
                       height: 400,
                       child: Scaffold(
                         appBar: AppBar(
-                          title: Text(
+                          title: const Text(
                             'ダイアログ内でsetState',
                             style: TextStyle(fontSize: 15.0),
                           ),
@@ -58,10 +60,10 @@ class _TopPageState extends State<TopPage> {
                         body: Center(
                             child: Text(
                           '$_counter',
-                          style: TextStyle(fontSize: 40.0),
+                          style: const TextStyle(fontSize: 40.0),
                         )),
                         floatingActionButton: FloatingActionButton(
-                          child: Icon(Icons.add),
+                          child: const Icon(Icons.add),
                           onPressed: () {
                             setState(() {
                               _counter++;

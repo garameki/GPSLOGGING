@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 // privateにします。
 class _StateContainer extends InheritedWidget {
   const _StateContainer({Key key, required Widget child, this.data})
-      : assert(child != null),
-        super(key: key, child: child);
+      : super(key: key, child: child);
 
   // CountManagerStateのインスタンスを保持し、下層に流します。
   final CountManagerState data;
@@ -21,7 +20,7 @@ class _StateContainer extends InheritedWidget {
 
 // 状態管理用Widgetです。
 class CountManager extends StatefulWidget {
-  const CountManager({this.child});
+  const CountManager({super.key, this.child});
 
   final Widget child;
 
